@@ -4,13 +4,13 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlinx-serialization'
-    id 'com.google.firebase.crashlytics'
-    id 'com.google.firebase.firebase-perf'
-    id 'com.google.gms.google-services'
+//    id 'com.google.firebase.crashlytics'
+//    id 'com.google.firebase.firebase-perf'
+//    id 'com.google.gms.google-services'
     id "org.jlleitschuh.gradle.ktlint"
-    id 'com.google.firebase.appdistribution'
+//    id 'com.google.firebase.appdistribution'
     id "io.gitlab.arturbosch.detekt"
-    id 'com.github.triplet.play'
+//    id 'com.github.triplet.play'
 }
 
 android {
@@ -30,8 +30,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            debuggable true
+            buildConfigField("boolean", "DEBUG", "true")
+        }
+
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
+            debuggable false
+            buildConfigField("boolean", "DEBUG", "false")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -106,9 +114,9 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timber_version"
 
     //Firebase
-    implementation platform('com.google.firebase:firebase-bom:29.3.1')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-perf-ktx'
-    implementation 'com.google.firebase:firebase-database-ktx'
+//    implementation platform('com.google.firebase:firebase-bom:29.3.1')
+//    implementation 'com.google.firebase:firebase-analytics-ktx'
+//    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+//    implementation 'com.google.firebase:firebase-perf-ktx'
+//    implementation 'com.google.firebase:firebase-database-ktx'
 }

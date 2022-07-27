@@ -1,4 +1,4 @@
-package com.ipsoft.bibliasagrada
+package com.ipsoft.bibliasagrada.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

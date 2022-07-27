@@ -2,7 +2,7 @@ buildscript {
     ext {
         compose_version = '1.1.1'
         livecycle_version = '2.5.0'
-        kotlin_version = '1.7.10'
+        kotlin_version = '1.6.10'
         safe_args_version = '2.3.5'
         coroutines_version = '1.6.1'
         room_version = '2.4.2'
@@ -36,9 +36,9 @@ buildscript {
 
         //Serialization
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.13'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
-        classpath 'com.google.firebase:perf-plugin:1.4.1'
+        //classpath 'com.google.gms:google-services:4.3.13'
+       // classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+       // classpath 'com.google.firebase:perf-plugin:1.4.1'
 
         //Klint
         classpath "org.jlleitschuh.gradle:ktlint-gradle:$klint_gradle_version"
@@ -47,9 +47,9 @@ buildscript {
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.18.1"
 
         //app distribution
-        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.2'
-
-        classpath("com.github.triplet.gradle:play-publisher:4.0.0-SNAPSHOT")
+//        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.2'
+//
+//        classpath("com.github.triplet.gradle:play-publisher:4.0.0-SNAPSHOT")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -58,7 +58,7 @@ buildscript {
 plugins {
     id 'com.android.application' version '7.2.1' apply false
     id 'com.android.library' version '7.2.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.5.31' apply false
+    id 'org.jetbrains.kotlin.android' version "${kotlin_version}" apply false
 }
 
 task clean(type: Delete) {
