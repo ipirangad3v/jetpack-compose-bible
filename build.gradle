@@ -9,12 +9,12 @@ buildscript {
         hilt_version = '2.42'
         coin_version = '2.1.0'
         koin_version = '3.1.2'
-        nav_version = '2.5.0'
         retrofit_version = '2.9.0'
         logging_interceptor_version = '5.0.0-alpha.6'
         gson_version = '2.9.0'
         timber_version = '5.0.1'
         klint_gradle_version = '10.3.0'
+        nav_version = '2.5.0'
 
     }
     repositories {
