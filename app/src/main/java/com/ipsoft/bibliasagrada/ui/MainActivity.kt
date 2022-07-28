@@ -1,6 +1,7 @@
 package com.ipsoft.bibliasagrada.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -16,13 +17,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_ID
+import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_ABBREV
+import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_NAME
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_CHAPTER_ID
 import com.ipsoft.bibliasagrada.domain.core.exception.Failure
 import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
@@ -54,32 +56,55 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BibleApplication(viewModel: BibleViewModel? = null) {
+fun BibleApplication(viewModel: BibleViewModel) {
 
-    val loading: State<Boolean>? = viewModel?.loading?.observeAsState(initial = false)
-    val failure: State<Failure?>? = viewModel?.failure?.observeAsState(initial = null)
+    val loading: State<Boolean> = viewModel.loading.observeAsState(initial = false)
+    val failure: State<Failure?> = viewModel.failure.observeAsState(initial = null)
 
-    loading?.value?.let {
+    loading.value.let {
         if (it) {
             Loading()
         }
     }
-    failure?.value
+    failure.value?.let { message ->
+        Toast(message.toString())
+    }
 
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = ListBooksScreen.route) {
         composable(route = ListBooksScreen.route) {
-            ListBooks(viewModel)
-        }
-        composable(route = ListChaptersScreen.route, arguments = listOf(navArgument(ARG_BOOK_ID) {
-            type = NavType.StringType
-        })) { navBackStackEntry ->
-            ListChapters(navBackStackEntry.arguments!!.getString(ARG_BOOK_ID), navController)
+            ListBooks(viewModel, navController)
         }
         composable(
-            route = BibleReadingScreen.route, arguments = listOf(
-                navArgument(ARG_BOOK_ID) {
+            route = ListChaptersScreen.route,
+            arguments =
+            listOf(
+                navArgument(ARG_BOOK_NAME) {
+                    type = NavType.StringType
+                },
+                navArgument(ARG_BOOK_ABBREV) {
+                    type = NavType.StringType
+                },
+            )
+        ) { navBackStackEntry ->
+            ListChapters(
+                navBackStackEntry.arguments?.getString(
+                    ARG_BOOK_NAME
+                )!!,
+                navBackStackEntry.arguments?.getString(
+                    ARG_BOOK_ABBREV
+                )!!, navController
+
+            )
+        }
+        composable(
+            route = BibleReadingScreen.route,
+            arguments = listOf(
+                navArgument(ARG_BOOK_NAME) {
+                    type = NavType.StringType
+                },
+                navArgument(ARG_BOOK_ABBREV) {
                     type = NavType.StringType
                 },
                 navArgument(ARG_CHAPTER_ID) {
@@ -88,9 +113,15 @@ fun BibleApplication(viewModel: BibleViewModel? = null) {
             )
         ) { navBackStackEntry ->
             BibleReading(
-                navBackStackEntry.arguments!!.getString(ARG_BOOK_ID),
+                navBackStackEntry.arguments?.getString(
+                    ARG_BOOK_NAME
+                )!!,
+                navBackStackEntry.arguments?.getString(
+                    ARG_BOOK_ABBREV
+                )!!,
                 navBackStackEntry.arguments!!.getInt(ARG_CHAPTER_ID),
-                navController
+                navController,
+                viewModel
             )
         }
     }
@@ -104,14 +135,16 @@ fun Loading() {
             .fillMaxSize()
             .background(Color.White),
     ) {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.Yellow)
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    BíbliaSagradaTheme {
-        BibleApplication()
-    }
+fun Toast(message: String) {
+    val context = LocalContext.current
+    Toast.makeText(
+        context,
+        message,
+        Toast.LENGTH_SHORT
+    ).show()
 }

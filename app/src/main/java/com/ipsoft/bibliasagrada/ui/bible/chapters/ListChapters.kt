@@ -4,8 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun ListChapters(string: String?, navController: NavHostController) {
-
+fun ListChapters(
+    bookName: String,
+    bookAbbrev: String,
+    navController: NavHostController
+) {
 
 
 }

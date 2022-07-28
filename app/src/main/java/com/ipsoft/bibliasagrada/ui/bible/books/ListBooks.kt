@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -14,15 +15,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ipsoft.bibliasagrada.R
 import com.ipsoft.bibliasagrada.domain.model.BookResponse
 import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
 import com.ipsoft.bibliasagrada.ui.components.AppBar
 
 @Composable
-fun ListBooks(viewModel: BibleViewModel? = null) {
+fun ListBooks(viewModel: BibleViewModel? = null, navController: NavController) {
 
     val booksState: State<List<BookResponse>>? =
         viewModel?.books?.observeAsState(initial = emptyList())
@@ -36,7 +37,9 @@ fun ListBooks(viewModel: BibleViewModel? = null) {
         ) {
             LazyColumn {
                 items(booksState?.value ?: emptyList()) { book ->
-                    BookItem(book)
+                    BookItem(book) {
+                        navController.navigate("chapters_list/${book.name}/${book.abbrev.pt}")
+                    }
                 }
             }
         }
@@ -45,10 +48,11 @@ fun ListBooks(viewModel: BibleViewModel? = null) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BookItem(book: BookResponse) {
+fun BookItem(book: BookResponse, onBookClick: () -> Unit) {
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(), onClick = onBookClick
     ) {
         Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = book.name)
@@ -58,10 +62,5 @@ fun BookItem(book: BookResponse) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ListBooksPreview() {
-    ListBooks()
-}
 
 

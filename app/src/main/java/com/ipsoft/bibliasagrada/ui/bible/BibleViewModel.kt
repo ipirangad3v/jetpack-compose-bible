@@ -37,6 +37,18 @@ class BibleViewModel @Inject constructor(
         }
     }
 
+    fun getBookChapter(bookName: String, bookAbbrev: String, chapterId: Int) {
+        handleLoading(true)
+        return getChapterUseCase(
+            GetChapterUseCase.Params(bookName, bookAbbrev, chapterId), viewModelScope
+        ) {
+            it.fold(
+                ::handleFailure,
+                ::handleFetchBookChapterSuccess
+            )
+        }
+    }
+
     fun searchBook(search: String) {
         _books.postValue(
             _books.value?.filter {
@@ -45,18 +57,6 @@ class BibleViewModel @Inject constructor(
                 )
             }
         )
-    }
-
-    fun getBookChapter(book: BookResponse, selectedChapter: Int) {
-        handleLoading(true)
-        return getChapterUseCase(
-            GetChapterUseCase.Params(book, selectedChapter), viewModelScope
-        ) {
-            it.fold(
-                ::handleFailure,
-                ::handleFetchBookChapterSuccess
-            )
-        }
     }
 
     private fun handleFetchBookChapterSuccess(chapterResponse: ChapterResponse) {
