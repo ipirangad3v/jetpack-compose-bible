@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -41,10 +43,20 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
+
+
     private val viewModel: BibleViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+                viewModel.getBooks()
+            }
+        callRequestPermissions()
+
         setContent {
             BibliaSagradaTheme {
                 // A surface container using the 'background' color from the theme
@@ -56,6 +68,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun callRequestPermissions() {
+        permissionLauncher.launch(
+            arrayOf(
+                android.Manifest.permission.INTERNET
+            )
+        )
     }
 }
 
@@ -176,12 +196,3 @@ fun Loading() {
     }
 }
 
-@Composable
-fun Toast(message: String) {
-    val context = LocalContext.current
-    Toast.makeText(
-        context,
-        message,
-        Toast.LENGTH_SHORT
-    ).show()
-}

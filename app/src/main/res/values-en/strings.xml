@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">The bible</string>
+    <string name="chapter">chapter</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="no_network">No internet connection</string>
+    <string name="server_error">Server error</string>
 </resources>
