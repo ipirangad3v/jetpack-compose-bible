@@ -10,6 +10,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,7 +33,7 @@ fun ListBooks(viewModel: BibleViewModel? = null, navController: NavController) {
     viewModel?.getBooks()
 
 
-    Scaffold(topBar = { AppBar(stringResource(id = R.string.app_name)) }) {
+    Scaffold(topBar = { AppBar(stringResource(id = R.string.app_name), icon = Icons.Default.Home) }) {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
