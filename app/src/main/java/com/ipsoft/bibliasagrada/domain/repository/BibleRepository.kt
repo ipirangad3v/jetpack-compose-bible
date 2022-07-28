@@ -15,7 +15,8 @@ import javax.inject.Inject
 interface BibleRepository : Repository {
     suspend fun getBooks(): Either<Failure, List<BookResponse>>
     suspend fun getChapter(
-        book: BookResponse,
+        bookName: String,
+        bookAbbrev: String,
         selectedChapter: Int,
     ): Either<Failure, ChapterResponse>
 
@@ -71,17 +72,18 @@ interface BibleRepository : Repository {
         }
 
         override suspend fun getChapter(
-            book: BookResponse,
+            bookName: String,
+            bookAbbrev: String,
             selectedChapter: Int,
         ): Either<Failure, ChapterResponse> {
 
             val bibleDao = churchDatabase.churchDao()
 
             val chapterDbResponse = bibleDao.getAllChapters()
-                .firstOrNull { it.book.name == book.name && it.chapter.number == selectedChapter }
+                .firstOrNull { it.book.name == bookName && it.chapter.number == selectedChapter }
 
             val abbrevs = bibleDao.getAllAbbrevs()
-            val abbrev = abbrevs.firstOrNull { it.bookName == book.name }
+            val abbrev = abbrevs.firstOrNull { it.bookName == bookName }
 
             return if (chapterDbResponse == null) {
                 when (networkHandler.isNetworkAvailable()) {
