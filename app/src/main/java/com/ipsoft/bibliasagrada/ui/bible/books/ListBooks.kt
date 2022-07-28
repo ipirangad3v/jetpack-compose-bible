@@ -38,7 +38,7 @@ fun ListBooks(viewModel: BibleViewModel? = null, navController: NavController) {
             LazyColumn {
                 items(booksState?.value ?: emptyList()) { book ->
                     BookItem(book) {
-                        navController.navigate("chapters_list/${book.name}/${book.abbrev.pt}")
+                        navController.navigate("chapters_list/${book.name}/${book.abbrev.pt}/${book.chapters}")
                     }
                 }
             }

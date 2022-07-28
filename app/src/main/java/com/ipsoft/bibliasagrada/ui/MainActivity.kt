@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
@@ -26,12 +27,13 @@ import androidx.navigation.navArgument
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_ABBREV
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_NAME
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_CHAPTER_ID
+import com.ipsoft.bibliasagrada.domain.common.constants.ARG_CHAPTER_QUANTITY
 import com.ipsoft.bibliasagrada.domain.core.exception.Failure
 import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
 import com.ipsoft.bibliasagrada.ui.bible.books.ListBooks
 import com.ipsoft.bibliasagrada.ui.bible.chapters.ListChapters
 import com.ipsoft.bibliasagrada.ui.bible.reading.BibleReading
-import com.ipsoft.bibliasagrada.ui.theme.BíbliaSagradaTheme
+import com.ipsoft.bibliasagrada.ui.theme.BibliaSagradaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BíbliaSagradaTheme {
+            BibliaSagradaTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -86,6 +88,9 @@ fun BibleApplication(viewModel: BibleViewModel) {
                 navArgument(ARG_BOOK_ABBREV) {
                     type = NavType.StringType
                 },
+                navArgument(ARG_CHAPTER_QUANTITY) {
+                    type = NavType.IntType
+                }
             )
         ) { navBackStackEntry ->
             ListChapters(
@@ -94,7 +99,11 @@ fun BibleApplication(viewModel: BibleViewModel) {
                 )!!,
                 navBackStackEntry.arguments?.getString(
                     ARG_BOOK_ABBREV
-                )!!, navController
+                )!!,
+                navBackStackEntry.arguments?.getInt(
+                    ARG_CHAPTER_QUANTITY
+                )!!,
+                navController
 
             )
         }
@@ -135,7 +144,10 @@ fun Loading() {
             .fillMaxSize()
             .background(Color.White),
     ) {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.Yellow)
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center),
+            color = if (isSystemInDarkTheme()) Color.White else Color.Black
+        )
     }
 }
 

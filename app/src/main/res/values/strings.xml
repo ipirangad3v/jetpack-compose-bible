@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bíblia Sagrada</string>
+    <string name="chapter">capítulo</string>
 </resources>
