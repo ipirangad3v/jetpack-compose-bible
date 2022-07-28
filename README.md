@@ -5,7 +5,7 @@ Simple and beaultful design, good for Oled phones with dark mode.
 
 App ui made with Jetpack Compose.
 
-App architecture is a combination of MVVM with Clean Arquitecture
+App architecture is a combination of MVVM with Clean Arquitecture.
 
 ## Package estructure
 
