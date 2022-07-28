@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Bíblia Sagrada</string>
     <string name="chapter">capítulo</string>
+    <string name="unknown_error">Erro desconhecido</string>
+    <string name="no_network">Sem conexão de internet</string>
+    <string name="server_error">Ocorreu um erro no servidor</string>
 </resources>

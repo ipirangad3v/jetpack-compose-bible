@@ -19,11 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ipsoft.bibliasagrada.R
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_ABBREV
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_BOOK_NAME
 import com.ipsoft.bibliasagrada.domain.common.constants.ARG_CHAPTER_ID
@@ -68,8 +70,31 @@ fun BibleApplication(viewModel: BibleViewModel) {
             Loading()
         }
     }
-    failure.value?.let { message ->
-        Toast(message.toString())
+    failure.value?.let {
+        when (it) {
+            is Failure.NetworkConnection -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.no_network),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
+            is Failure.ServerError -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.server_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            else -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.unknown_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 
 
