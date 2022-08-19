@@ -63,6 +63,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        viewModel.stopSpeech()
+    }
+
     private fun callRequestPermissions() {
         permissionLauncher.launch(
             arrayOf(
