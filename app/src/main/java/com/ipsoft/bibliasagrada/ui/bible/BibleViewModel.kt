@@ -1,5 +1,7 @@
 package com.ipsoft.bibliasagrada.ui.bible
 
+import android.content.Context
+import android.speech.tts.TextToSpeech
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,6 +13,7 @@ import com.ipsoft.bibliasagrada.domain.usecases.GetChapterUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.UseCase
 import com.ipsoft.bibliasagrada.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,15 +22,21 @@ class BibleViewModel @Inject constructor(
     private val getChapterUseCase: GetChapterUseCase,
 ) : BaseViewModel() {
 
+
+    private val _currentText = MutableLiveData<String>()
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
     private val _lastSearch: MutableLiveData<String> = MutableLiveData("")
     private val _filteredBooks: MutableLiveData<List<BookResponse>?> = MutableLiveData()
     private val _chapter: MutableLiveData<ChapterResponse> = MutableLiveData()
+    private var textToSpeech: TextToSpeech? = null
+    private val _isSpeechEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val books: LiveData<List<BookResponse>> = _books
     val lastSearch: LiveData<String> = _lastSearch
     val filteredBooks: LiveData<List<BookResponse>?> = _filteredBooks
     val chapter: LiveData<ChapterResponse> = _chapter
+    val isSpeechEnabled: LiveData<Boolean> = _isSpeechEnabled
+    val currentText: LiveData<String> = _currentText
 
     fun getBooks() {
         handleLoading(true)
@@ -64,9 +73,42 @@ class BibleViewModel @Inject constructor(
         )
     }
 
+    fun textToSpeech(context: Context, text: String) {
+        textToSpeech = TextToSpeech(
+            context
+        ) {
+            if (it == TextToSpeech.SUCCESS) {
+                textToSpeech?.let { txtToSpeech ->
+                    txtToSpeech.language = Locale.getDefault()
+                    txtToSpeech.setSpeechRate(1f)
+                    txtToSpeech.speak(
+                        text,
+                        TextToSpeech.QUEUE_FLUSH,
+                        null,
+                        null
+                    )
+                }
+            }
+        }
+        _isSpeechEnabled.postValue(true)
+
+    }
+
+    fun stopSpeech() {
+        if (textToSpeech?.isSpeaking == true) {
+            textToSpeech?.stop()
+            textToSpeech?.shutdown()
+        }
+        _isSpeechEnabled.value = textToSpeech?.isSpeaking ?: false
+
+
+    }
+
     private fun handleFetchBookChapterSuccess(chapterResponse: ChapterResponse) {
         handleLoading(false)
         _chapter.postValue(chapterResponse)
+        _currentText.value = chapterResponse.verses.map { it.text + " " }
+            .toString()
     }
 
     private fun handleBooksFetchSuccess(bookResponse: List<BookResponse>) {

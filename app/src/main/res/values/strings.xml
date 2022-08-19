@@ -7,4 +7,6 @@
     <string name="find_book">Buscar livro</string>
     <string name="loading_error">Ocorreu um erro ao carregar</string>
     <string name="try_again">Tentar novamente</string>
+    <string name="stop_speech">Parar</string>
+    <string name="speech">Ouvir</string>
 </resources>
