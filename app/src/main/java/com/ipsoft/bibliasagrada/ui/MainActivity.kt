@@ -17,8 +17,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -84,9 +82,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BibleApplication(viewModel: BibleViewModel) {
 
-    val showToast = remember {
-        mutableStateOf(true)
-    }
     val loading: State<Boolean> = viewModel.loading.observeAsState(initial = false)
     val failure: State<Failure?> = viewModel.failure.observeAsState(initial = null)
 
@@ -96,7 +91,6 @@ fun BibleApplication(viewModel: BibleViewModel) {
         }
     }
     failure.value?.let {
-        if (showToast.value) {
             when (it) {
                 is Failure.NetworkConnection -> {
                     Toast.makeText(
@@ -121,8 +115,6 @@ fun BibleApplication(viewModel: BibleViewModel) {
                     ).show()
                 }
             }
-            showToast.value = false
-        }
     }
 
 

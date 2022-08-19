@@ -3,7 +3,10 @@ package com.ipsoft.bibliasagrada.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ipsoft.bibliasagrada.domain.core.exception.Failure
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 open class BaseViewModel : ViewModel() {
     private val _failure: MutableLiveData<Failure> = MutableLiveData()
@@ -15,6 +18,10 @@ open class BaseViewModel : ViewModel() {
     protected fun handleFailure(failure: Failure) {
         handleLoading(false)
         _failure.postValue(failure)
+        viewModelScope.launch {
+            delay(1000)
+            _failure.postValue(null)
+        }
     }
 
     protected fun handleLoading(isLoading: Boolean) {

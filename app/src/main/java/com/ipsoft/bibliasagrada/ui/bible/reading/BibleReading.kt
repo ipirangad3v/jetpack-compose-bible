@@ -11,8 +11,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,14 +32,21 @@ fun BibleReading(
     bookAbbrev: String,
     chapterId: Int,
     navController: NavHostController,
-    viewModel: BibleViewModel
+    viewModel: BibleViewModel,
 ) {
+
+    val shouldGetBook by rememberUpdatedState(newValue = true)
 
     val chapterState: State<ChapterResponse?> =
         viewModel.chapter.observeAsState(initial = null)
 
-    viewModel.getBookChapter(bookName, bookAbbrev, chapterId)
+    LaunchedEffect(true) {
+        if (shouldGetBook) {
+            viewModel.getBookChapter(bookName, bookAbbrev, chapterId)
+        }
 
+
+    }
     Scaffold(
         topBar = {
             AppBar(
