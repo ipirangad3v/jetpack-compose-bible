@@ -20,7 +20,6 @@ interface BibleRepository : Repository {
         selectedChapter: Int,
     ): Either<Failure, ChapterResponse>
 
-
     class Network
     @Inject constructor(
         private val networkHandler: NetworkHandler,

@@ -24,5 +24,4 @@ class UseCasesModule {
     fun createGetChaptersUseCase(repository: BibleRepository): GetChapterUseCase {
         return GetChapterUseCase(repository)
     }
-
 }

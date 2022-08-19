@@ -7,19 +7,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
@@ -44,7 +38,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
-
 
     private val viewModel: BibleViewModel by viewModels()
 
@@ -82,46 +75,40 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BibleApplication(viewModel: BibleViewModel) {
 
-    val loading: State<Boolean> = viewModel.loading.observeAsState(initial = false)
     val failure: State<Failure?> = viewModel.failure.observeAsState(initial = null)
+    val loading: State<Boolean> = viewModel.loading.observeAsState(initial = true)
 
-    loading.value.let {
-        if (it) {
-            Loading()
+    failure.value?.let {
+        when (it) {
+            is Failure.NetworkConnection -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.no_network),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
+            is Failure.ServerError -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.server_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            else -> {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.unknown_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
-    failure.value?.let {
-            when (it) {
-                is Failure.NetworkConnection -> {
-                    Toast.makeText(
-                        LocalContext.current,
-                        stringResource(R.string.no_network),
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
-                }
-                is Failure.ServerError -> {
-                    Toast.makeText(
-                        LocalContext.current,
-                        stringResource(R.string.server_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                else -> {
-                    Toast.makeText(
-                        LocalContext.current,
-                        stringResource(R.string.unknown_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-    }
-
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = ListBooksScreen.route) {
         composable(route = ListBooksScreen.route) {
-            ListBooks(viewModel, navController)
+            ListBooks(viewModel, navController, loading)
         }
         composable(
             route = ListChaptersScreen.route,
@@ -175,24 +162,9 @@ fun BibleApplication(viewModel: BibleViewModel) {
                 )!!,
                 navBackStackEntry.arguments!!.getInt(ARG_CHAPTER_ID),
                 navController,
-                viewModel
+                viewModel,
+                loading
             )
         }
     }
-
 }
-
-@Composable
-fun Loading() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center),
-            color = if (isSystemInDarkTheme()) Color.White else Color.Black
-        )
-    }
-}
-

@@ -71,4 +71,8 @@ class BibleViewModel @Inject constructor(
         handleLoading(false)
         _books.postValue(bookResponse)
     }
+
+    fun clearFilteredBooks() {
+        _filteredBooks.postValue(null)
+    }
 }

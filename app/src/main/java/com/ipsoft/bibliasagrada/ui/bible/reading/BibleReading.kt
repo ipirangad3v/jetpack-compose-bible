@@ -25,6 +25,8 @@ import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
 import com.ipsoft.bibliasagrada.domain.model.Verse
 import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
 import com.ipsoft.bibliasagrada.ui.components.AppBar
+import com.ipsoft.bibliasagrada.ui.components.ErrorScreen
+import com.ipsoft.bibliasagrada.ui.components.Loading
 
 @Composable
 fun BibleReading(
@@ -33,6 +35,7 @@ fun BibleReading(
     chapterId: Int,
     navController: NavHostController,
     viewModel: BibleViewModel,
+    loading: State<Boolean>
 ) {
 
     val shouldGetBook by rememberUpdatedState(newValue = true)
@@ -44,8 +47,6 @@ fun BibleReading(
         if (shouldGetBook) {
             viewModel.getBookChapter(bookName, bookAbbrev, chapterId)
         }
-
-
     }
     Scaffold(
         topBar = {
@@ -60,16 +61,21 @@ fun BibleReading(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
+            if (loading.value) Loading()
+            if (chapterState.value == null && !loading.value) ErrorScreen {
+                viewModel.getBookChapter(
+                    bookName,
+                    bookAbbrev,
+                    chapterId
+                )
+            }
             LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
                     VerseItem(verse)
                 }
             }
         }
-
-
     }
-
 }
 
 @Composable

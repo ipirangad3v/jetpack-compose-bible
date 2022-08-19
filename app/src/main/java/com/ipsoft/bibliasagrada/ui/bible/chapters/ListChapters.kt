@@ -42,17 +42,12 @@ fun ListChapters(
                 items(chapterQuantity) { index ->
                     val currentChapter = index + 1
                     ChapterItem(currentChapter) {
-                        navController.navigate("reading/${bookName}/${bookAbbrev}/${currentChapter}")
+                        navController.navigate("reading/$bookName/$bookAbbrev/$currentChapter")
                     }
                 }
-
             }
         }
-
-
     }
-
-
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -60,9 +55,11 @@ fun ListChapters(
 fun ChapterItem(chapter: Int, onBookClick: () -> Unit) {
 
     Card(
-        elevation = 5.dp, modifier = Modifier
+        elevation = 5.dp,
+        modifier = Modifier
             .wrapContentSize()
-            .padding(12.dp), onClick = onBookClick
+            .padding(12.dp),
+        onClick = onBookClick
     ) {
         Text(
             text = chapter.toString(),
@@ -70,6 +67,4 @@ fun ChapterItem(chapter: Int, onBookClick: () -> Unit) {
             modifier = Modifier.padding(12.dp)
         )
     }
-
-
 }

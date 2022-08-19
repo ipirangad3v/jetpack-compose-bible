@@ -36,6 +36,4 @@ fun AppBar(
         title = { Text(text = title, textAlign = TextAlign.Center) },
         backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
     )
-
-
 }
