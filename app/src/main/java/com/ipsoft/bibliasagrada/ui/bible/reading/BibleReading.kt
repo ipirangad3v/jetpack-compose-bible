@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -85,10 +86,11 @@ fun BibleReading(
                     chapterId
                 )
             }
-            LazyColumn(modifier = Modifier.padding(bottom = 48.dp)) {
+            LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
                     VerseItem(verse)
                 }
+                item { Spacer(modifier = Modifier.height(48.dp)) }
             }
             BottomMenu(
                 viewModel,
@@ -108,31 +110,29 @@ fun BottomMenu(
 
     val context = LocalContext.current
 
-    Surface(modifier = Modifier
+    Card(elevation = 8.dp, modifier = Modifier
+        .padding(8.dp)
         .wrapContentSize(align = Alignment.BottomCenter)
         .wrapContentSize()) {
-
-        Card(elevation = 8.dp, modifier = Modifier.padding(8.dp)) {
-            Row(verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(8.dp)) {
-                Row(modifier = Modifier.clickable {
-                    if (!isSpeechEnable.value) viewModel.textToSpeech(context,
-                        currentText.value) else viewModel.stopSpeech()
-                }) {
-                    Icon(imageVector = if (isSpeechEnable.value) Icons.Filled.Clear else Icons.Filled.PlayArrow,
-                        contentDescription = null)
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(text = if (isSpeechEnable.value) stringResource(id = R.string.stop_speech) else stringResource(
-                        id = R.string.speech))
-                }
+        Row(verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(8.dp)) {
+            Row(modifier = Modifier.clickable {
+                if (!isSpeechEnable.value) viewModel.textToSpeech(context,
+                    currentText.value) else viewModel.stopSpeech()
+            }) {
+                Icon(imageVector = if (isSpeechEnable.value) Icons.Filled.Clear else Icons.Filled.PlayArrow,
+                    contentDescription = null)
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(text = if (isSpeechEnable.value) stringResource(id = R.string.stop_speech) else stringResource(
+                    id = R.string.speech))
+            }
 //                Icon(imageVector = Icons.Default.Star, contentDescription = null)
 //                Icon(imageVector = Icons.Default.Share, contentDescription = null)
-            }
         }
-
     }
 }
+
 
 @Composable
 fun VerseItem(verse: Verse, onClick: (() -> Unit)? = null) {
