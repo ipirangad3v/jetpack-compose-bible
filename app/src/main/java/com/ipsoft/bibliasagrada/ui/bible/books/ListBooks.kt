@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
@@ -24,8 +26,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -45,7 +50,8 @@ fun ListBooks(
 
     val shouldGetBooks by rememberUpdatedState(newValue = true)
 
-    val textState = remember { mutableStateOf(TextFieldValue("")) }
+    val textState =
+        remember { mutableStateOf(viewModel.lastSearch.value?.let { TextFieldValue(it) }) }
 
     val booksState: State<List<BookResponse>> =
         viewModel.books.observeAsState(initial = emptyList())
@@ -84,20 +90,28 @@ fun ListBooks(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchView(state: MutableState<TextFieldValue>, viewModel: BibleViewModel) {
+fun SearchView(state: MutableState<TextFieldValue?>, viewModel: BibleViewModel) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     Surface(modifier = Modifier.fillMaxWidth()) {
-        TextField(
-            value = state.value,
-            onValueChange = { value: TextFieldValue ->
-                state.value = value
-                if (value.text.isBlank()) viewModel.clearFilteredBooks() else viewModel.searchBook(
-                    value.text
-                )
-            },
-            label = { Text(stringResource(id = R.string.find_book)) },
-            singleLine = true
-        )
+        state.value?.let {
+            TextField(
+                value = it,
+                onValueChange = { value: TextFieldValue ->
+                    state.value = value
+                    viewModel.updateLastSearch(value.text)
+                    if (value.text.isBlank()) viewModel.clearFilteredBooks() else viewModel.searchBook(
+                        value.text
+                    )
+                },
+                label = { Text(stringResource(id = R.string.find_book)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }
+                ))
+        }
     }
 }
 

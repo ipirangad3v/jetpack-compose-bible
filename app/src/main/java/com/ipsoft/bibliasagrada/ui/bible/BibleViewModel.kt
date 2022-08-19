@@ -20,10 +20,12 @@ class BibleViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
+    private val _lastSearch: MutableLiveData<String> = MutableLiveData("")
     private val _filteredBooks: MutableLiveData<List<BookResponse>?> = MutableLiveData()
     private val _chapter: MutableLiveData<ChapterResponse> = MutableLiveData()
 
     val books: LiveData<List<BookResponse>> = _books
+    val lastSearch: LiveData<String> = _lastSearch
     val filteredBooks: LiveData<List<BookResponse>?> = _filteredBooks
     val chapter: LiveData<ChapterResponse> = _chapter
 
@@ -73,5 +75,9 @@ class BibleViewModel @Inject constructor(
 
     fun clearFilteredBooks() {
         _filteredBooks.postValue(null)
+    }
+
+    fun updateLastSearch(text: String) {
+        _lastSearch.postValue(text)
     }
 }
