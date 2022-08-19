@@ -15,7 +15,10 @@ import com.ipsoft.bibliasagrada.R
 @Composable
 fun ErrorScreen(function: () -> Unit) {
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,

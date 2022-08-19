@@ -41,7 +41,6 @@ class BibleViewModel @Inject constructor(
 
     fun getBookChapter(bookName: String, bookAbbrev: String, chapterId: Int) {
         handleLoading(true)
-        _chapter.value = null
         return getChapterUseCase(
             GetChapterUseCase.Params(bookName, bookAbbrev, chapterId), viewModelScope
         ) {

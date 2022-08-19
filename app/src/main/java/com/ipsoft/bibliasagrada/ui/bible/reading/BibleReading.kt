@@ -35,7 +35,7 @@ fun BibleReading(
     chapterId: Int,
     navController: NavHostController,
     viewModel: BibleViewModel,
-    loading: State<Boolean>
+    loading: State<Boolean>,
 ) {
 
     val shouldGetBook by rememberUpdatedState(newValue = true)
