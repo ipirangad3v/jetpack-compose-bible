@@ -4,4 +4,5 @@
     <string name="unknown_error">Erro desconhecido</string>
     <string name="no_network">Sem conexão de internet</string>
     <string name="server_error">Ocorreu um erro no servidor</string>
+    <string name="find_book">Buscar livro</string>
 </resources>

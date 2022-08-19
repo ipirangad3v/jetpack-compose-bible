@@ -16,13 +16,15 @@ import javax.inject.Inject
 @HiltViewModel
 class BibleViewModel @Inject constructor(
     private val getBooksUseCase: GetBooksUseCase,
-    private val getChapterUseCase: GetChapterUseCase
+    private val getChapterUseCase: GetChapterUseCase,
 ) : BaseViewModel() {
 
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
+    private val _filteredBooks: MutableLiveData<List<BookResponse>?> = MutableLiveData()
     private val _chapter: MutableLiveData<ChapterResponse> = MutableLiveData()
 
     val books: LiveData<List<BookResponse>> = _books
+    val filteredBooks: LiveData<List<BookResponse>?> = _filteredBooks
     val chapter: LiveData<ChapterResponse> = _chapter
 
     fun getBooks() {
@@ -39,6 +41,7 @@ class BibleViewModel @Inject constructor(
 
     fun getBookChapter(bookName: String, bookAbbrev: String, chapterId: Int) {
         handleLoading(true)
+        _chapter.value = null
         return getChapterUseCase(
             GetChapterUseCase.Params(bookName, bookAbbrev, chapterId), viewModelScope
         ) {
@@ -50,7 +53,7 @@ class BibleViewModel @Inject constructor(
     }
 
     fun searchBook(search: String) {
-        _books.postValue(
+        _filteredBooks.postValue(
             _books.value?.filter {
                 it.name.removeAccents().contains(search, true) || it.abbrev.pt.contains(
                     search, true
