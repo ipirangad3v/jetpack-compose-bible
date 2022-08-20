@@ -1,4 +1,7 @@
 # Biblie
+
+![Download on play store](https://github.com/AnthoniIP/jetpack-compose-bible/blob/master/screenshots/playstore.png | width=100)(https://play.google.com/store/apps/details?id=com.ipsoft.bibliasagrada)
+
 Simple and useful bible app for android, no ads, just reading.
 
 Simple and beaultful design, good for Oled phones with dark mode.
