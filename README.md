@@ -1,6 +1,6 @@
 # Bible
 
-![Download on play store](https://github.com/AnthoniIP/Biblie/blob/master/screenshots/playstore.png)(https://play.google.com/store/apps/details?id=com.ipsoft.bibliasagrada)
+<a href="https://play.google.com/store/apps/details?id=com.ipsoft.bibliasagrada"><img src="https://github.com/AnthoniIP/Biblie/blob/master/screenshots/playstore.png" alt="Download on play store" width="200"></a>
 
 Simple and useful bible app for android, no ads, just reading.
 
