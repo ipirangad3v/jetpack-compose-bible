@@ -42,7 +42,7 @@ fun ListChapters(
                 items(chapterQuantity) { index ->
                     val currentChapter = index + 1
                     ChapterItem(currentChapter) {
-                        navController.navigate("reading/$bookName/$bookAbbrev/$currentChapter")
+                        navController.navigate("reading/$bookName/$bookAbbrev/$currentChapter/$chapterQuantity")
                     }
                 }
             }
