@@ -23,6 +23,7 @@ class BibleViewModel @Inject constructor(
 ) : BaseViewModel() {
 
 
+    private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
     private val _lastSearch: MutableLiveData<String> = MutableLiveData("")
@@ -37,6 +38,22 @@ class BibleViewModel @Inject constructor(
     val chapter: LiveData<ChapterResponse> = _chapter
     val isSpeechEnabled: LiveData<Boolean> = _isSpeechEnabled
     val currentText: LiveData<String> = _currentText
+    val currentChapter: LiveData<Int> = _currentChapter
+
+    fun setCurrentChapter(chapter: Int) {
+        _currentChapter.value = chapter
+    }
+    fun nextChapter() {
+        _currentChapter.value?.let {
+            _currentChapter.value = it + 1
+        }
+    }
+
+    fun previousChapter() {
+        _currentChapter.value?.let {
+            if (it > 1) _currentChapter.value = it - 1
+        }
+    }
 
     fun getBooks() {
         handleLoading(true)

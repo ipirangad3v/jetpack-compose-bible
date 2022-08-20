@@ -155,6 +155,9 @@ fun BibleApplication(viewModel: BibleViewModel) {
                 },
                 navArgument(ARG_CHAPTER_ID) {
                     type = NavType.IntType
+                },
+                navArgument(ARG_CHAPTER_QUANTITY) {
+                    type = NavType.IntType
                 }
             )
         ) { navBackStackEntry ->
@@ -166,6 +169,7 @@ fun BibleApplication(viewModel: BibleViewModel) {
                     ARG_BOOK_ABBREV
                 )!!,
                 navBackStackEntry.arguments!!.getInt(ARG_CHAPTER_ID),
+                navBackStackEntry.arguments!!.getInt(ARG_CHAPTER_QUANTITY),
                 navController,
                 viewModel,
                 loading
