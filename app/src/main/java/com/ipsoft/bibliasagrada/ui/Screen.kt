@@ -11,4 +11,4 @@ object ListChaptersScreen :
     Screen("chapters_list/{$ARG_BOOK_NAME}/{$ARG_BOOK_ABBREV}/{$ARG_CHAPTER_QUANTITY}")
 
 object BibleReadingScreen :
-    Screen("reading/{$ARG_BOOK_NAME}/{$ARG_BOOK_ABBREV}/{$ARG_CHAPTER_ID}")
+    Screen("reading/{$ARG_BOOK_NAME}/{$ARG_BOOK_ABBREV}/{$ARG_CHAPTER_ID}/{$ARG_CHAPTER_QUANTITY}")
