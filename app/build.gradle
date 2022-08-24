@@ -4,9 +4,9 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlinx-serialization'
-//    id 'com.google.firebase.crashlytics'
-//    id 'com.google.firebase.firebase-perf'
-//    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.firebase-perf'
+    id 'com.google.gms.google-services'
     id "org.jlleitschuh.gradle.ktlint"
 //    id 'com.google.firebase.appdistribution'
     id "io.gitlab.arturbosch.detekt"
@@ -21,8 +21,8 @@ android {
         applicationId "com.ipsoft.bibliasagrada"
         minSdk 21
         targetSdk 32
-        versionCode 7
-        versionName "1.6"
+        versionCode 8
+        versionName "1.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -119,12 +119,12 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.0"
 
-    //Firebase
-//    implementation platform('com.google.firebase:firebase-bom:29.3.1')
-//    implementation 'com.google.firebase:firebase-analytics-ktx'
-//    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-//    implementation 'com.google.firebase:firebase-perf-ktx'
-//    implementation 'com.google.firebase:firebase-database-ktx'
+//    Firebase
+    implementation platform('com.google.firebase:firebase-bom:29.3.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-perf-ktx'
+    implementation 'com.google.firebase:firebase-database-ktx'
 }
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {

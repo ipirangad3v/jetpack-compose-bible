@@ -38,9 +38,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
 
         //Firebase
-        //classpath 'com.google.gms:google-services:4.3.13'
-       // classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
-       // classpath 'com.google.firebase:perf-plugin:1.4.1'
+        classpath 'com.google.gms:google-services:4.3.13'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+        classpath 'com.google.firebase:perf-plugin:1.4.1'
 
         //Klint
         classpath "org.jlleitschuh.gradle:ktlint-gradle:$klint_gradle_version"
