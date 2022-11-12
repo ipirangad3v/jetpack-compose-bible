@@ -22,7 +22,6 @@ class BibleViewModel @Inject constructor(
     private val getChapterUseCase: GetChapterUseCase,
 ) : BaseViewModel() {
 
-
     private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
@@ -108,7 +107,6 @@ class BibleViewModel @Inject constructor(
             }
         }
         _isSpeechEnabled.postValue(true)
-
     }
 
     fun stopSpeech() {
@@ -117,8 +115,6 @@ class BibleViewModel @Inject constructor(
             textToSpeech?.shutdown()
         }
         _isSpeechEnabled.value = textToSpeech?.isSpeaking ?: false
-
-
     }
 
     private fun handleFetchBookChapterSuccess(chapterResponse: ChapterResponse) {

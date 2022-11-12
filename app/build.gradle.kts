@@ -40,8 +40,12 @@ android {
             isMinifyEnabled = true
             isDebuggable = false
             buildConfigField("boolean", "DEBUG", "false")
-            setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"))
+            setProguardFiles(
+                listOf(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            )
         }
     }
     compileOptions {
@@ -67,7 +71,6 @@ android {
         resources.excludes.add("META-INF/*")
     }
     namespace = ConfigData.applicationId
-
 }
 dependencies {
 
@@ -83,13 +86,13 @@ dependencies {
     implementation(Deps.coroutinesPlayservice)
     implementation(Deps.workRuntime)
 
-    //Room
+    // Room
     implementation(Deps.roomKtx)
     implementation(Deps.roomRuntime)
     kapt(Deps.sqliteJdbc)
     kapt(Deps.roomCompiler)
 
-    //Navigation Compose
+    // Navigation Compose
     implementation(Deps.navigationCompose)
 
     // Hilt
@@ -97,20 +100,20 @@ dependencies {
     kapt(Deps.hiltCompiler)
     implementation(Deps.hiltWorker)
 
-    //Serialization
+    // Serialization
     implementation(Deps.kotlinSerialization)
 
-    //Gson
+    // Gson
     implementation(Deps.gson)
 
-    //Retrofit
+    // Retrofit
     implementation(Deps.retrofit)
     implementation(Deps.converterGson)
     implementation(Deps.loggingInterceptor)
-    //Timber
+    // Timber
     implementation(Deps.timber)
 
-    //Compose
+    // Compose
     implementation(Deps.composeRuntime)
     implementation(Deps.composeUi)
     implementation(Deps.composeMaterial)
@@ -119,7 +122,7 @@ dependencies {
     debugImplementation(Deps.composeUiTest)
     implementation(Deps.accompanist)
 
-    //Firebase
+    // Firebase
 //    implementation platform("com.google.firebase:firebase-bom:29.3.1")
 //    implementation "com.google.firebase:firebase-analytics-ktx"
 //    implementation "com.google.firebase:firebase-crashlytics-ktx"
