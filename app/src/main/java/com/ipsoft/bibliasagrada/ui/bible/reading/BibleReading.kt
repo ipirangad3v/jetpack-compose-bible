@@ -57,13 +57,10 @@ fun BibleReading(
     val currentText: State<String> = viewModel.currentText.observeAsState(initial = "")
     val currentChapter: State<Int> = viewModel.currentChapter.observeAsState(initial = chapterId)
 
-
     with(viewModel) {
         getBookChapter(bookName, bookAbbrev, currentChapter.value)
         setCurrentChapter(currentChapter.value)
     }
-
-
 
     Scaffold(
         topBar = {
@@ -115,47 +112,61 @@ fun BottomMenu(
 
     val context = LocalContext.current
 
-    Card(elevation = 8.dp, modifier = Modifier
-        .wrapContentSize(align = Alignment.BottomCenter)
-        .fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.Bottom,
+    Card(
+        elevation = 8.dp,
+        modifier = Modifier
+            .wrapContentSize(align = Alignment.BottomCenter)
+            .fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(8.dp)) {
+            modifier = Modifier.padding(8.dp)
+        ) {
             currentChapter.value.let { currentChapter ->
-                Icon(imageVector = Icons.Default.ArrowBack,
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = null,
                     modifier = Modifier.clickable {
                         if (currentChapter > 1) {
                             viewModel.previousChapter()
                         }
-                    })
-
+                    }
+                )
             }
-            Row(modifier = Modifier.clickable {
-                if (!isSpeechEnable.value) viewModel.textToSpeech(context,
-                    currentText.value) else viewModel.stopSpeech()
-            }) {
-                Icon(imageVector = if (isSpeechEnable.value) Icons.Filled.Clear else Icons.Filled.PlayArrow,
-                    contentDescription = null)
+            Row(
+                modifier = Modifier.clickable {
+                    if (!isSpeechEnable.value) viewModel.textToSpeech(
+                        context,
+                        currentText.value
+                    ) else viewModel.stopSpeech()
+                }
+            ) {
+                Icon(
+                    imageVector = if (isSpeechEnable.value) Icons.Filled.Clear else Icons.Filled.PlayArrow,
+                    contentDescription = null
+                )
                 Spacer(modifier = Modifier.width(2.dp))
-                Text(text = if (isSpeechEnable.value) stringResource(id = R.string.stop_speech) else stringResource(
-                    id = R.string.speech))
+                Text(
+                    text = if (isSpeechEnable.value) stringResource(id = R.string.stop_speech) else stringResource(
+                        id = R.string.speech
+                    )
+                )
             }
             currentChapter.value.let { currentChapter ->
-                Icon(imageVector = Icons.Default.ArrowForward,
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
                     contentDescription = null,
                     modifier = Modifier.clickable {
                         if (chapterQuantity > currentChapter) {
                             viewModel.nextChapter()
-
                         }
-                    })
+                    }
+                )
             }
-
         }
     }
 }
-
 
 @Composable
 fun VerseItem(verse: Verse, onClick: (() -> Unit)? = null) {
