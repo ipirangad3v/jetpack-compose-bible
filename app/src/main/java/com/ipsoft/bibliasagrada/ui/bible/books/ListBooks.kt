@@ -110,7 +110,8 @@ fun SearchView(state: MutableState<TextFieldValue?>, viewModel: BibleViewModel) 
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = { keyboardController?.hide() }
-                ))
+                )
+            )
         }
     }
 }
