@@ -7,6 +7,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.ipsoft.bibliasagrada.domain.common.constants.MAX_FONT_SIZE
+import com.ipsoft.bibliasagrada.domain.common.constants.MIN_FONT_SIZE
 import com.ipsoft.bibliasagrada.domain.core.extension.removeAccents
 import com.ipsoft.bibliasagrada.domain.model.BookResponse
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
@@ -24,8 +26,9 @@ class BibleViewModel @Inject constructor(
     private val getChapterUseCase: GetChapterUseCase,
 ) : BaseViewModel() {
 
+    private var bruteFontSize = 16
 
-    private val _fontSize = MutableLiveData(16.sp)
+    private val _fontSize = MutableLiveData(bruteFontSize.sp)
     private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
@@ -113,7 +116,6 @@ class BibleViewModel @Inject constructor(
             }
         }
         _isSpeechEnabled.postValue(true)
-
     }
 
     fun stopSpeech() {
@@ -122,8 +124,6 @@ class BibleViewModel @Inject constructor(
             textToSpeech?.shutdown()
         }
         _isSpeechEnabled.value = textToSpeech?.isSpeaking ?: false
-
-
     }
 
     private fun handleFetchBookChapterSuccess(chapterResponse: ChapterResponse) {
@@ -144,5 +144,13 @@ class BibleViewModel @Inject constructor(
 
     fun updateLastSearch(text: String) {
         _lastSearch.postValue(text)
+    }
+
+    fun increaseFontSize() {
+        if (bruteFontSize < MAX_FONT_SIZE) _fontSize.value = (++bruteFontSize).sp
+    }
+
+    fun decreaseFontSize() {
+        if (bruteFontSize > MIN_FONT_SIZE) _fontSize.value = (--bruteFontSize).sp
     }
 }

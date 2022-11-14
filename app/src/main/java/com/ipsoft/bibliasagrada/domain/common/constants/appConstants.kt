@@ -10,3 +10,7 @@ const val ARG_BOOK_ABBREV = "book_abbrev"
 const val ARG_CHAPTER_QUANTITY = "chapter_quantity"
 const val ARG_BOOK_ID = "book_id"
 const val ARG_CHAPTER_ID = "chapterId"
+
+// font size
+const val MIN_FONT_SIZE = 8
+const val MAX_FONT_SIZE = 128
