@@ -29,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.ipsoft.bibliasagrada.R
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
@@ -56,6 +58,7 @@ fun BibleReading(
         viewModel.isSpeechEnabled.observeAsState(initial = false)
     val currentText: State<String> = viewModel.currentText.observeAsState(initial = "")
     val currentChapter: State<Int> = viewModel.currentChapter.observeAsState(initial = chapterId)
+    val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
 
 
     with(viewModel) {
@@ -89,7 +92,7 @@ fun BibleReading(
             }
             LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
-                    VerseItem(verse)
+                    VerseItem(verse, fontSizeState)
                 }
                 item { Spacer(modifier = Modifier.height(48.dp)) }
             }
@@ -158,7 +161,7 @@ fun BottomMenu(
 
 
 @Composable
-fun VerseItem(verse: Verse, onClick: (() -> Unit)? = null) {
+fun VerseItem(verse: Verse, fontSize: State<TextUnit>, onClick: (() -> Unit)? = null) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,6 +172,6 @@ fun VerseItem(verse: Verse, onClick: (() -> Unit)? = null) {
                 }
             }
     ) {
-        Text(text = "${verse.number}. ${verse.text}")
+        Text(text = "${verse.number}. ${verse.text}", fontSize = fontSize.value)
     }
 }

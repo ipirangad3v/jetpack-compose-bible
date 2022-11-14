@@ -2,6 +2,8 @@ package com.ipsoft.bibliasagrada.ui.bible
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -23,6 +25,7 @@ class BibleViewModel @Inject constructor(
 ) : BaseViewModel() {
 
 
+    private val _fontSize = MutableLiveData(16.sp)
     private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
@@ -32,6 +35,7 @@ class BibleViewModel @Inject constructor(
     private var textToSpeech: TextToSpeech? = null
     private val _isSpeechEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val fontSize: LiveData<TextUnit> = _fontSize
     val books: LiveData<List<BookResponse>> = _books
     val lastSearch: LiveData<String> = _lastSearch
     val filteredBooks: LiveData<List<BookResponse>?> = _filteredBooks
@@ -43,6 +47,7 @@ class BibleViewModel @Inject constructor(
     fun setCurrentChapter(chapter: Int) {
         _currentChapter.value = chapter
     }
+
     fun nextChapter() {
         _currentChapter.value?.let {
             _currentChapter.value = it + 1
