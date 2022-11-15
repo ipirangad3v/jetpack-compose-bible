@@ -1,5 +1,7 @@
 package com.ipsoft.bibliasagrada.domain.common.constants
 
+import com.ipsoft.bibliasagrada.BuildConfig
+
 const val PLATFORM = "android"
 const val SOCKET_TIMEOUT = 5000L
 
@@ -13,3 +15,6 @@ const val ARG_CHAPTER_ID = "chapterId"
 const val MIN_FONT_SIZE = 8
 const val MAX_FONT_SIZE = 128
 const val STD_FONT_SIZE = 18
+
+//playStore
+const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"

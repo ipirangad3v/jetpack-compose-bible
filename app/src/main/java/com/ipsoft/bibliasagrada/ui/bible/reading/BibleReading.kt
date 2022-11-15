@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.ipsoft.bibliasagrada.R
+import com.ipsoft.bibliasagrada.domain.common.constants.PLAY_STORE_URL
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
 import com.ipsoft.bibliasagrada.domain.model.Verse
 import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
@@ -116,7 +117,7 @@ fun BibleReading(
                 item { Spacer(modifier = Modifier.height(48.dp)) }
             }
             selectedVerse.value?.let {
-                ShareVerseMenu(verse = it, viewModel)
+                ShareVerseMenu(verse = it, viewModel, bookName, chapterId)
             }
             BottomMenu(
                 viewModel,
@@ -278,7 +279,7 @@ fun VerseItem(
 }
 
 @Composable
-fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel) {
+fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, chapter: Int) {
 
     val context = LocalContext.current
 
@@ -292,7 +293,7 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel) {
         }
     ) {
         DropdownMenuItem(onClick = {
-            shareVerseIntent(verse, context)
+            shareVerseIntent(verse, context, bookName = bookName, chapter = chapter)
         }) {
             Row(
             ) {
@@ -310,10 +311,16 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel) {
     }
 }
 
-private fun shareVerseIntent(verse: Verse, context: Context) {
+private fun shareVerseIntent(verse: Verse, context: Context, bookName: String, chapter: Int) {
     val shareIntent = Intent().apply {
         action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, "${verse.number}. ${verse.text}")
+        putExtra(Intent.EXTRA_TEXT, """
+            ${verse.text}
+            $bookName ${chapter}:${verse.number}
+            
+            "${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL "
+        """.trimIndent())
+
         type = "text/plain"
     }
 
