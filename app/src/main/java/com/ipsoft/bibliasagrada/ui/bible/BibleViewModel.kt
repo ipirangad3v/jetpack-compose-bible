@@ -12,6 +12,7 @@ import com.ipsoft.bibliasagrada.domain.common.constants.MIN_FONT_SIZE
 import com.ipsoft.bibliasagrada.domain.core.extension.removeAccents
 import com.ipsoft.bibliasagrada.domain.model.BookResponse
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
+import com.ipsoft.bibliasagrada.domain.model.Verse
 import com.ipsoft.bibliasagrada.domain.usecases.GetBooksUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetChapterUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetFontSizeUseCase
@@ -19,9 +20,9 @@ import com.ipsoft.bibliasagrada.domain.usecases.StoreFontSizeUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.UseCase
 import com.ipsoft.bibliasagrada.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
+import timber.log.Timber
 
 @HiltViewModel
 class BibleViewModel @Inject constructor(
@@ -33,6 +34,7 @@ class BibleViewModel @Inject constructor(
 
     private var bruteFontSize = 16
 
+    private val _selectedVerse = MutableLiveData<Verse?>(null)
     private val _fontSize = MutableLiveData(bruteFontSize.sp)
     private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
@@ -43,6 +45,7 @@ class BibleViewModel @Inject constructor(
     private var textToSpeech: TextToSpeech? = null
     private val _isSpeechEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val selectedVerse: LiveData<Verse?> = _selectedVerse
     val fontSize: LiveData<TextUnit> = _fontSize
     val books: LiveData<List<BookResponse>> = _books
     val lastSearch: LiveData<String> = _lastSearch
@@ -199,5 +202,14 @@ class BibleViewModel @Inject constructor(
             _fontSize.value = (--bruteFontSize).sp
             storeFontSize()
         }
+    }
+
+    fun setSelectedVerse(verse: Verse) {
+        _selectedVerse.value = verse
+
+    }
+
+    fun clearSelectedVerse() {
+        _selectedVerse.value = null
     }
 }

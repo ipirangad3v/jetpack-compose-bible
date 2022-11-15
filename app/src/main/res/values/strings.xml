@@ -12,4 +12,6 @@
     <string name="font_size">Tamanho da fonte</string>
     <string name="increase">Aumentar</string>
     <string name="decrease">Diminuir</string>
+    <string name="share">Compartilhar</string>
+    <string name="share_verse">Compartilhar versículo</string>
 </resources>

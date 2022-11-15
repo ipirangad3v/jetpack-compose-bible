@@ -1,6 +1,9 @@
 package com.ipsoft.bibliasagrada.ui.bible.reading
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +29,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -36,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -62,6 +67,8 @@ fun BibleReading(
     loading: State<Boolean>,
 ) {
 
+    val selectedVerse: State<Verse?> = viewModel.selectedVerse.observeAsState(null)
+    val context = LocalContext.current
     val chapterState: State<ChapterResponse?> =
         viewModel.chapter.observeAsState(initial = null)
     val isSpeechEnable: State<Boolean> =
@@ -74,6 +81,8 @@ fun BibleReading(
         getBookChapter(bookName, bookAbbrev, currentChapter.value)
         setCurrentChapter(currentChapter.value)
     }
+
+
 
     Scaffold(
         topBar = {
@@ -99,9 +108,15 @@ fun BibleReading(
             }
             LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
-                    VerseItem(verse, fontSizeState)
+                    VerseItem(verse, fontSizeState) {
+                        viewModel.setSelectedVerse(verse)
+
+                    }
                 }
                 item { Spacer(modifier = Modifier.height(48.dp)) }
+            }
+            selectedVerse.value?.let {
+                ShareVerseMenu(verse = it, viewModel)
             }
             BottomMenu(
                 viewModel,
@@ -136,7 +151,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-            ) {
+                ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -239,17 +254,70 @@ fun BottomMenu(
 }
 
 @Composable
-fun VerseItem(verse: Verse, fontSize: State<TextUnit>, onClick: (() -> Unit)? = null) {
+fun VerseItem(
+    verse: Verse,
+    fontSize: State<TextUnit>,
+    onLongClick: ((verse: Verse) -> Unit)? = null,
+) {
+
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable {
-                if (onClick != null) {
-                    onClick()
-                }
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = {
+                    if (onLongClick != null) {
+                        onLongClick(verse)
+                    }
+                })
             }
     ) {
         Text(text = "${verse.number}. ${verse.text}", fontSize = fontSize.value)
     }
+}
+
+@Composable
+fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel) {
+
+    val context = LocalContext.current
+
+    var expandedShareVerseMenu by remember { mutableStateOf(true) }
+
+    DropdownMenu(
+        expanded = expandedShareVerseMenu,
+        onDismissRequest = {
+            expandedShareVerseMenu = false
+            viewModel.clearSelectedVerse()
+        }
+    ) {
+        DropdownMenuItem(onClick = {
+            shareVerseIntent(verse, context)
+        }) {
+            Row(
+            ) {
+                Text(
+                    text = stringResource(id = R.string.share)
+
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(
+                    imageVector = Icons.Filled.Send,
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}
+
+private fun shareVerseIntent(verse: Verse, context: Context) {
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, "${verse.number}. ${verse.text}")
+        type = "text/plain"
+    }
+
+    val shareIntentChooser =
+        Intent.createChooser(shareIntent, context.getString(R.string.share_verse))
+    context.startActivity(shareIntentChooser)
 }
