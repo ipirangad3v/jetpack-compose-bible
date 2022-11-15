@@ -11,6 +11,6 @@
     <string name="stop_speech">Stop</string>
     <string name="speech">Listen</string>
     <string name="font_size">Font size</string>
-    <string name="increase">Aumentar</string>
-    <string name="decrease">Diminuir</string>
+    <string name="increase">Increase</string>
+    <string name="decrease">Decrease</string>
 </resources>
