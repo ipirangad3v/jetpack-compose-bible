@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
@@ -68,8 +69,8 @@ fun BibleReading(
     loading: State<Boolean>,
 ) {
 
+    val showTutorial: State<Boolean> = viewModel.showTutorial.observeAsState(initial = true)
     val selectedVerse: State<Verse?> = viewModel.selectedVerse.observeAsState(null)
-    val context = LocalContext.current
     val chapterState: State<ChapterResponse?> =
         viewModel.chapter.observeAsState(initial = null)
     val isSpeechEnable: State<Boolean> =
@@ -82,8 +83,6 @@ fun BibleReading(
         getBookChapter(bookName, bookAbbrev, currentChapter.value)
         setCurrentChapter(currentChapter.value)
     }
-
-
 
     Scaffold(
         topBar = {
@@ -99,6 +98,27 @@ fun BibleReading(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
+
+            DropdownMenu(expanded = showTutorial.value, onDismissRequest = { }) {
+                DropdownMenuItem(onClick = { }) {
+
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.verse_long_press_tutorial)
+
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.disableTutorials()
+                                }
+                        )
+                    }
+                }
+            }
             if (loading.value) Loading()
             if (chapterState.value == null && !loading.value) ErrorScreen {
                 viewModel.getBookChapter(
@@ -111,7 +131,6 @@ fun BibleReading(
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
                     VerseItem(verse, fontSizeState) {
                         viewModel.setSelectedVerse(verse)
-
                     }
                 }
                 item { Spacer(modifier = Modifier.height(48.dp)) }
@@ -152,7 +171,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-                ) {
+            ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -261,7 +280,6 @@ fun VerseItem(
     onLongClick: ((verse: Verse) -> Unit)? = null,
 ) {
 
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -295,8 +313,7 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, ch
         DropdownMenuItem(onClick = {
             shareVerseIntent(verse, context, bookName = bookName, chapter = chapter)
         }) {
-            Row(
-            ) {
+            Row() {
                 Text(
                     text = stringResource(id = R.string.share)
 
@@ -314,12 +331,14 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, ch
 private fun shareVerseIntent(verse: Verse, context: Context, bookName: String, chapter: Int) {
     val shareIntent = Intent().apply {
         action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, """
-            ${verse.text}
-            $bookName ${chapter}:${verse.number}
+        putExtra(
+            Intent.EXTRA_TEXT,
+            """
+            ${verse.text} - $bookName $chapter:${verse.number}
             
-            "${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL "
-        """.trimIndent())
+            "${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL"
+            """.trimIndent()
+        )
 
         type = "text/plain"
     }
