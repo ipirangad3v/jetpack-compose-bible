@@ -14,9 +14,12 @@ import com.ipsoft.bibliasagrada.domain.model.BookResponse
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
 import com.ipsoft.bibliasagrada.domain.usecases.GetBooksUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetChapterUseCase
+import com.ipsoft.bibliasagrada.domain.usecases.GetFontSizeUseCase
+import com.ipsoft.bibliasagrada.domain.usecases.StoreFontSizeUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.UseCase
 import com.ipsoft.bibliasagrada.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 
@@ -24,6 +27,8 @@ import javax.inject.Inject
 class BibleViewModel @Inject constructor(
     private val getBooksUseCase: GetBooksUseCase,
     private val getChapterUseCase: GetChapterUseCase,
+    private val getFontSizeUseCase: GetFontSizeUseCase,
+    private val storeFontSizeUseCase: StoreFontSizeUseCase,
 ) : BaseViewModel() {
 
     private var bruteFontSize = 16
@@ -46,6 +51,10 @@ class BibleViewModel @Inject constructor(
     val isSpeechEnabled: LiveData<Boolean> = _isSpeechEnabled
     val currentText: LiveData<String> = _currentText
     val currentChapter: LiveData<Int> = _currentChapter
+
+    init {
+        getFontSize()
+    }
 
     fun setCurrentChapter(chapter: Int) {
         _currentChapter.value = chapter
@@ -126,6 +135,38 @@ class BibleViewModel @Inject constructor(
         _isSpeechEnabled.value = textToSpeech?.isSpeaking ?: false
     }
 
+    private fun getFontSize() {
+        getFontSizeUseCase(
+            UseCase.None(), viewModelScope
+        ) {
+            it.fold(
+                ::handleFailure,
+                ::handleFontSizeFetchSuccess
+            )
+        }
+    }
+
+    private fun storeFontSize() {
+        storeFontSizeUseCase(
+            StoreFontSizeUseCase.Params(bruteFontSize), viewModelScope
+        ) {
+            it.fold(
+                ::handleFailure,
+                ::handleFontSizeStoreSuccess
+            )
+        }
+    }
+
+    private fun handleFontSizeStoreSuccess(fontSize: Unit) {
+        Timber.i("----- Font size stored $fontSize")
+    }
+
+    private fun handleFontSizeFetchSuccess(fontSize: Int) {
+        Timber.i("----- Font retrieved $fontSize")
+        bruteFontSize = fontSize
+        _fontSize.value = bruteFontSize.sp
+    }
+
     private fun handleFetchBookChapterSuccess(chapterResponse: ChapterResponse) {
         handleLoading(false)
         _chapter.postValue(chapterResponse)
@@ -147,10 +188,16 @@ class BibleViewModel @Inject constructor(
     }
 
     fun increaseFontSize() {
-        if (bruteFontSize < MAX_FONT_SIZE) _fontSize.value = (++bruteFontSize).sp
+        if (bruteFontSize < MAX_FONT_SIZE) {
+            _fontSize.value = (++bruteFontSize).sp
+            storeFontSize()
+        }
     }
 
     fun decreaseFontSize() {
-        if (bruteFontSize > MIN_FONT_SIZE) _fontSize.value = (--bruteFontSize).sp
+        if (bruteFontSize > MIN_FONT_SIZE) {
+            _fontSize.value = (--bruteFontSize).sp
+            storeFontSize()
+        }
     }
 }

@@ -17,12 +17,10 @@ class RoomModule {
 
     @Provides
     @Singleton
-    fun providesBibleDatabase(application: Application): ChurchDatabase {
-        return Room
-            .databaseBuilder(application, ChurchDatabase::class.java, BIBLE_DB_NAME)
-            .fallbackToDestructiveMigration()
-            .build()
-    }
+    fun providesBibleDatabase(application: Application): ChurchDatabase = Room
+        .databaseBuilder(application, ChurchDatabase::class.java, BIBLE_DB_NAME)
+        .fallbackToDestructiveMigration()
+        .build()
 
     @Provides
     @Singleton

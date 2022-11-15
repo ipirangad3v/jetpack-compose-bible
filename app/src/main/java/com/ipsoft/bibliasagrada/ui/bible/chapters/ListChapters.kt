@@ -14,10 +14,15 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
 import com.ipsoft.bibliasagrada.ui.components.AppBar
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -26,8 +31,11 @@ fun ListChapters(
     bookName: String,
     bookAbbrev: String,
     chapterQuantity: Int,
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: BibleViewModel,
 ) {
+
+    val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
 
     Scaffold(topBar = {
         AppBar(bookName, icon = Icons.Default.ArrowBack) {
@@ -41,7 +49,7 @@ fun ListChapters(
             LazyVerticalGrid(cells = GridCells.Adaptive(minSize = 70.dp)) {
                 items(chapterQuantity) { index ->
                     val currentChapter = index + 1
-                    ChapterItem(currentChapter) {
+                    ChapterItem(currentChapter, fontSizeState) {
                         navController.navigate("reading/$bookName/$bookAbbrev/$currentChapter/$chapterQuantity")
                     }
                 }
@@ -52,7 +60,7 @@ fun ListChapters(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ChapterItem(chapter: Int, onBookClick: () -> Unit) {
+fun ChapterItem(chapter: Int, fontSizeState: State<TextUnit>, onBookClick: () -> Unit) {
 
     Card(
         elevation = 5.dp,
@@ -64,7 +72,8 @@ fun ChapterItem(chapter: Int, onBookClick: () -> Unit) {
         Text(
             text = chapter.toString(),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(12.dp),
+            fontSize = fontSizeState.value
         )
     }
 }

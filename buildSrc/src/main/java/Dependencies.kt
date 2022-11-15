@@ -42,27 +42,19 @@ object Deps {
     val workRuntime by lazy{ "androidx.work:work-runtime-ktx:${Versions.workRuntime}" }
     val timber by lazy { "com.jakewharton.timber:timber:${Versions.timber}" }
     val kotlin by lazy { "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}" }
-    val firebaseAnalytics by lazy {
-        "com.google.firebase:firebase-analytics:${Versions.firebaseAnalytics}"
-    }
     val firebaseCrashlytics by lazy {
         "com.google.firebase:firebase-crashlytics:${Versions.firebaseCrashlytics}"
     }
     val firebasePerformance by lazy { "com.google.firebase:firebase-perf-ktx" }
-    val firebaseBom by lazy { "com.google.firebase:firebase-bom:${Versions.firebaseBom}" }
     val kotlinSerialization by lazy { "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}" }
     val hilt by lazy { "com.google.dagger:hilt-android:${Versions.hilt}" }
     val hiltWorker by lazy { "androidx.hilt:hilt-work:${Versions.hiltWorker}" }
     val hiltCompiler by lazy { "com.google.dagger:hilt-android-compiler:${Versions.hilt}" }
-    val kaptHiltCompiler by lazy { "androidx.hilt:hilt-compiler:${Versions.hiltKapt}" }
     val gson by lazy { "com.google.code.gson:gson:${Versions.gson}" }
     val retrofit by lazy { "com.squareup.retrofit2:retrofit:${Versions.retrofit}" }
     val converterGson by lazy { "com.squareup.retrofit2:converter-gson:${Versions.retrofit}" }
     val loggingInterceptor by lazy {
         "com.squareup.okhttp3:logging-interceptor:${Versions.loggingInterceptor}"
-    }
-    val viewmodelLifecycle by lazy {
-        "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"
     }
     val lifecycleRuntime by lazy {
         "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
@@ -90,6 +82,7 @@ object Deps {
     val composeUiToolingPreview by lazy { "androidx.compose.ui:ui-tooling-preview:${Versions.compose}" }
     val composeUiTooling by lazy { "androidx.compose.ui:ui-tooling:${Versions.compose}" }
     val composeUiTest by lazy { "androidx.compose.ui:ui-test-manifest:${Versions.compose}"}
+    val dataStore by lazy {"androidx.datastore:datastore-preferences:${Versions.dataStore}" }
 }
 
 object Test {
