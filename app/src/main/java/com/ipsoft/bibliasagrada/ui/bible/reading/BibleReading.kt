@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
@@ -99,22 +98,14 @@ fun BibleReading(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            DropdownMenu(expanded = showTutorial.value, onDismissRequest = { }) {
+            DropdownMenu(expanded = showTutorial.value,
+                onDismissRequest = { viewModel.disableTutorials() }) {
                 DropdownMenuItem(onClick = { }) {
 
                     Row() {
                         Text(
                             text = stringResource(id = R.string.verse_long_press_tutorial)
 
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable {
-                                    viewModel.disableTutorials()
-                                }
                         )
                     }
                 }
@@ -171,7 +162,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-            ) {
+                ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -331,13 +322,11 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, ch
 private fun shareVerseIntent(verse: Verse, context: Context, bookName: String, chapter: Int) {
     val shareIntent = Intent().apply {
         action = Intent.ACTION_SEND
+        val line1 = "${verse.text} - $bookName $chapter:${verse.number}"
+        val line2 = "\n\n${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL"
         putExtra(
             Intent.EXTRA_TEXT,
-            """
-            ${verse.text} - $bookName $chapter:${verse.number}
-            
-            "${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL"
-            """.trimIndent()
+           line1 + line2
         )
 
         type = "text/plain"
