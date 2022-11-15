@@ -16,5 +16,5 @@ const val MIN_FONT_SIZE = 8
 const val MAX_FONT_SIZE = 128
 const val STD_FONT_SIZE = 18
 
-//playStore
+// playStore
 const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
