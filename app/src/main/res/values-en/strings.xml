@@ -5,4 +5,12 @@
     <string name="unknown_error">Unknown error</string>
     <string name="no_network">No internet connection</string>
     <string name="server_error">Server error</string>
+    <string name="find_book">Find Book</string>
+    <string name="loading_error">A error occurs while loading</string>
+    <string name="try_again">Try again</string>
+    <string name="stop_speech">Stop</string>
+    <string name="speech">Listen</string>
+    <string name="font_size">Font size</string>
+    <string name="increase">Aumentar</string>
+    <string name="decrease">Diminuir</string>
 </resources>

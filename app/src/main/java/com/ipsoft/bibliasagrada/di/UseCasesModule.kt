@@ -1,8 +1,10 @@
 package com.ipsoft.bibliasagrada.di
 
+import com.ipsoft.bibliasagrada.data.datastore.PreferencesDataStore
 import com.ipsoft.bibliasagrada.domain.repository.BibleRepository
 import com.ipsoft.bibliasagrada.domain.usecases.GetBooksUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetChapterUseCase
+import com.ipsoft.bibliasagrada.domain.usecases.GetFontSizeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,13 +17,16 @@ class UseCasesModule {
 
     @Provides
     @Singleton
-    fun createGetBooksUseCase(repository: BibleRepository): GetBooksUseCase {
-        return GetBooksUseCase(repository)
-    }
+    fun createGetBooksUseCase(repository: BibleRepository): GetBooksUseCase =
+        GetBooksUseCase(repository)
 
     @Provides
     @Singleton
-    fun createGetChaptersUseCase(repository: BibleRepository): GetChapterUseCase {
-        return GetChapterUseCase(repository)
-    }
+    fun createGetChaptersUseCase(repository: BibleRepository): GetChapterUseCase =
+        GetChapterUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun createGetFontSizeUseCase(preferencesDataStore: PreferencesDataStore): GetFontSizeUseCase =
+        GetFontSizeUseCase(preferencesDataStore)
 }

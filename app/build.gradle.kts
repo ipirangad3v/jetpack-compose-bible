@@ -54,6 +54,7 @@ android {
     }
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
+            freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
             jvmTarget = "1.8"
         }
     }
@@ -122,6 +123,9 @@ dependencies {
     debugImplementation(Deps.composeUiTest)
     implementation(Deps.accompanist)
 
+    // Datastore
+    implementation(Deps.dataStore)
+
     // Firebase
 //    implementation platform("com.google.firebase:firebase-bom:29.3.1")
 //    implementation "com.google.firebase:firebase-analytics-ktx"
@@ -133,3 +137,4 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
+
