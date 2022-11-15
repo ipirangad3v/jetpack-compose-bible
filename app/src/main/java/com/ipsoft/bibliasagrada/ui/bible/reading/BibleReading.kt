@@ -1,6 +1,9 @@
 package com.ipsoft.bibliasagrada.ui.bible.reading
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +29,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -36,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -44,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.ipsoft.bibliasagrada.R
+import com.ipsoft.bibliasagrada.domain.common.constants.PLAY_STORE_URL
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
 import com.ipsoft.bibliasagrada.domain.model.Verse
 import com.ipsoft.bibliasagrada.ui.bible.BibleViewModel
@@ -62,6 +68,8 @@ fun BibleReading(
     loading: State<Boolean>,
 ) {
 
+    val showTutorial: State<Boolean> = viewModel.showTutorial.observeAsState(initial = true)
+    val selectedVerse: State<Verse?> = viewModel.selectedVerse.observeAsState(null)
     val chapterState: State<ChapterResponse?> =
         viewModel.chapter.observeAsState(initial = null)
     val isSpeechEnable: State<Boolean> =
@@ -89,6 +97,19 @@ fun BibleReading(
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
+
+            DropdownMenu(expanded = showTutorial.value,
+                onDismissRequest = { viewModel.disableTutorials() }) {
+                DropdownMenuItem(onClick = { }) {
+
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.verse_long_press_tutorial)
+
+                        )
+                    }
+                }
+            }
             if (loading.value) Loading()
             if (chapterState.value == null && !loading.value) ErrorScreen {
                 viewModel.getBookChapter(
@@ -99,9 +120,14 @@ fun BibleReading(
             }
             LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
-                    VerseItem(verse, fontSizeState)
+                    VerseItem(verse, fontSizeState) {
+                        viewModel.setSelectedVerse(verse)
+                    }
                 }
                 item { Spacer(modifier = Modifier.height(48.dp)) }
+            }
+            selectedVerse.value?.let {
+                ShareVerseMenu(verse = it, viewModel, bookName, chapterId)
             }
             BottomMenu(
                 viewModel,
@@ -136,7 +162,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-            ) {
+                ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -239,17 +265,74 @@ fun BottomMenu(
 }
 
 @Composable
-fun VerseItem(verse: Verse, fontSize: State<TextUnit>, onClick: (() -> Unit)? = null) {
+fun VerseItem(
+    verse: Verse,
+    fontSize: State<TextUnit>,
+    onLongClick: ((verse: Verse) -> Unit)? = null,
+) {
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable {
-                if (onClick != null) {
-                    onClick()
-                }
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = {
+                    if (onLongClick != null) {
+                        onLongClick(verse)
+                    }
+                })
             }
     ) {
         Text(text = "${verse.number}. ${verse.text}", fontSize = fontSize.value)
     }
+}
+
+@Composable
+fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, chapter: Int) {
+
+    val context = LocalContext.current
+
+    var expandedShareVerseMenu by remember { mutableStateOf(true) }
+
+    DropdownMenu(
+        expanded = expandedShareVerseMenu,
+        onDismissRequest = {
+            expandedShareVerseMenu = false
+            viewModel.clearSelectedVerse()
+        }
+    ) {
+        DropdownMenuItem(onClick = {
+            shareVerseIntent(verse, context, bookName = bookName, chapter = chapter)
+        }) {
+            Row() {
+                Text(
+                    text = stringResource(id = R.string.share)
+
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(
+                    imageVector = Icons.Filled.Send,
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}
+
+private fun shareVerseIntent(verse: Verse, context: Context, bookName: String, chapter: Int) {
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        val line1 = "${verse.text} - $bookName $chapter:${verse.number}"
+        val line2 = "\n\n${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL"
+        putExtra(
+            Intent.EXTRA_TEXT,
+           line1 + line2
+        )
+
+        type = "text/plain"
+    }
+
+    val shareIntentChooser =
+        Intent.createChooser(shareIntent, context.getString(R.string.share_verse))
+    context.startActivity(shareIntentChooser)
 }
