@@ -23,20 +23,15 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
-
-        return Retrofit.Builder()
-            .baseUrl(BIBLE_BASE_URL)
-            .client(createClient())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
+    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+        .baseUrl(BIBLE_BASE_URL)
+        .client(createClient())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
     @Provides
     @Singleton
-    fun createBibleService(retrofit: Retrofit): ChurchRoomApi {
-        return retrofit.create(ChurchRoomApi::class.java)
-    }
+    fun createBibleService(retrofit: Retrofit): ChurchRoomApi = retrofit.create(ChurchRoomApi::class.java)
 
     @Provides
     @Singleton

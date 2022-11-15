@@ -2,17 +2,24 @@ package com.ipsoft.bibliasagrada.ui.bible
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.ipsoft.bibliasagrada.domain.common.constants.MAX_FONT_SIZE
+import com.ipsoft.bibliasagrada.domain.common.constants.MIN_FONT_SIZE
 import com.ipsoft.bibliasagrada.domain.core.extension.removeAccents
 import com.ipsoft.bibliasagrada.domain.model.BookResponse
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
 import com.ipsoft.bibliasagrada.domain.usecases.GetBooksUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetChapterUseCase
+import com.ipsoft.bibliasagrada.domain.usecases.GetFontSizeUseCase
+import com.ipsoft.bibliasagrada.domain.usecases.StoreFontSizeUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.UseCase
 import com.ipsoft.bibliasagrada.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 
@@ -20,8 +27,13 @@ import javax.inject.Inject
 class BibleViewModel @Inject constructor(
     private val getBooksUseCase: GetBooksUseCase,
     private val getChapterUseCase: GetChapterUseCase,
+    private val getFontSizeUseCase: GetFontSizeUseCase,
+    private val storeFontSizeUseCase: StoreFontSizeUseCase,
 ) : BaseViewModel() {
 
+    private var bruteFontSize = 16
+
+    private val _fontSize = MutableLiveData(bruteFontSize.sp)
     private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
     private val _books: MutableLiveData<List<BookResponse>> = MutableLiveData()
@@ -31,6 +43,7 @@ class BibleViewModel @Inject constructor(
     private var textToSpeech: TextToSpeech? = null
     private val _isSpeechEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val fontSize: LiveData<TextUnit> = _fontSize
     val books: LiveData<List<BookResponse>> = _books
     val lastSearch: LiveData<String> = _lastSearch
     val filteredBooks: LiveData<List<BookResponse>?> = _filteredBooks
@@ -39,9 +52,14 @@ class BibleViewModel @Inject constructor(
     val currentText: LiveData<String> = _currentText
     val currentChapter: LiveData<Int> = _currentChapter
 
+    init {
+        getFontSize()
+    }
+
     fun setCurrentChapter(chapter: Int) {
         _currentChapter.value = chapter
     }
+
     fun nextChapter() {
         _currentChapter.value?.let {
             _currentChapter.value = it + 1
@@ -117,6 +135,38 @@ class BibleViewModel @Inject constructor(
         _isSpeechEnabled.value = textToSpeech?.isSpeaking ?: false
     }
 
+    private fun getFontSize() {
+        getFontSizeUseCase(
+            UseCase.None(), viewModelScope
+        ) {
+            it.fold(
+                ::handleFailure,
+                ::handleFontSizeFetchSuccess
+            )
+        }
+    }
+
+    private fun storeFontSize() {
+        storeFontSizeUseCase(
+            StoreFontSizeUseCase.Params(bruteFontSize), viewModelScope
+        ) {
+            it.fold(
+                ::handleFailure,
+                ::handleFontSizeStoreSuccess
+            )
+        }
+    }
+
+    private fun handleFontSizeStoreSuccess(fontSize: Unit) {
+        Timber.i("----- Font size stored $fontSize")
+    }
+
+    private fun handleFontSizeFetchSuccess(fontSize: Int) {
+        Timber.i("----- Font retrieved $fontSize")
+        bruteFontSize = fontSize
+        _fontSize.value = bruteFontSize.sp
+    }
+
     private fun handleFetchBookChapterSuccess(chapterResponse: ChapterResponse) {
         handleLoading(false)
         _chapter.postValue(chapterResponse)
@@ -135,5 +185,19 @@ class BibleViewModel @Inject constructor(
 
     fun updateLastSearch(text: String) {
         _lastSearch.postValue(text)
+    }
+
+    fun increaseFontSize() {
+        if (bruteFontSize < MAX_FONT_SIZE) {
+            _fontSize.value = (++bruteFontSize).sp
+            storeFontSize()
+        }
+    }
+
+    fun decreaseFontSize() {
+        if (bruteFontSize > MIN_FONT_SIZE) {
+            _fontSize.value = (--bruteFontSize).sp
+            storeFontSize()
+        }
     }
 }

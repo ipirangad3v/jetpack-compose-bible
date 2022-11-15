@@ -140,8 +140,8 @@ fun BibleApplication(viewModel: BibleViewModel) {
                 navBackStackEntry.arguments?.getInt(
                     ARG_CHAPTER_QUANTITY
                 )!!,
-                navController
-
+                navController,
+                viewModel,
             )
         }
         composable(

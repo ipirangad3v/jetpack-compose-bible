@@ -32,7 +32,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ipsoft.bibliasagrada.R
 import com.ipsoft.bibliasagrada.domain.model.BookResponse
@@ -48,6 +50,7 @@ fun ListBooks(
     loading: State<Boolean>,
 ) {
 
+    val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
     val shouldGetBooks by rememberUpdatedState(newValue = true)
 
     val textState =
@@ -80,7 +83,7 @@ fun ListBooks(
                 SearchView(textState, viewModel)
                 LazyColumn {
                     items(filteredBooksState.value ?: booksState.value) { book ->
-                        BookItem(book) {
+                        BookItem(book, fontSizeState) {
                             navController.navigate("chapters_list/${book.name}/${book.abbrev.pt}/${book.chapters}")
                         }
                     }
@@ -118,7 +121,7 @@ fun SearchView(state: MutableState<TextFieldValue?>, viewModel: BibleViewModel) 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BookItem(book: BookResponse, onBookClick: () -> Unit) {
+fun BookItem(book: BookResponse, fontSizeState: State<TextUnit>, onBookClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize(), onClick = onBookClick
     ) {
@@ -126,8 +129,8 @@ fun BookItem(book: BookResponse, onBookClick: () -> Unit) {
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = book.name)
-            Text(text = book.abbrev.pt)
+            Text(text = book.name, fontSize = fontSizeState.value)
+            Text(text = book.abbrev.pt, fontSize = fontSizeState.value)
         }
     }
 }

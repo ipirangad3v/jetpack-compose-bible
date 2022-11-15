@@ -13,23 +13,35 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.ipsoft.bibliasagrada.R
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
@@ -56,6 +68,7 @@ fun BibleReading(
         viewModel.isSpeechEnabled.observeAsState(initial = false)
     val currentText: State<String> = viewModel.currentText.observeAsState(initial = "")
     val currentChapter: State<Int> = viewModel.currentChapter.observeAsState(initial = chapterId)
+    val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
 
     with(viewModel) {
         getBookChapter(bookName, bookAbbrev, currentChapter.value)
@@ -86,7 +99,7 @@ fun BibleReading(
             }
             LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
-                    VerseItem(verse)
+                    VerseItem(verse, fontSizeState)
                 }
                 item { Spacer(modifier = Modifier.height(48.dp)) }
             }
@@ -95,7 +108,7 @@ fun BibleReading(
                 isSpeechEnable,
                 currentText,
                 chapterQuantity,
-                currentChapter
+                currentChapter,
             )
         }
     }
@@ -110,7 +123,50 @@ fun BottomMenu(
     currentChapter: State<Int>,
 ) {
 
+    var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        DropdownMenuItem(onClick = { /* Handle refresh! */ }) {
+            Row(
+                modifier = Modifier.clickable {
+                    viewModel.decreaseFontSize()
+                },
+
+            ) {
+                Text(
+                    text = stringResource(id = R.string.decrease)
+
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_minus),
+                    contentDescription = null
+                )
+            }
+        }
+        Divider()
+        DropdownMenuItem(onClick = { /* Handle send feedback! */ }) {
+            Row(
+                modifier = Modifier.clickable {
+                    viewModel.increaseFontSize()
+                },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.increase)
+
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null
+                )
+            }
+        }
+    }
 
     Card(
         elevation = 8.dp,
@@ -153,6 +209,20 @@ fun BottomMenu(
                     )
                 )
             }
+            Row(
+                modifier = Modifier.clickable {
+                    expanded = !expanded
+                }
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_font_size),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = stringResource(id = R.string.font_size)
+                )
+            }
             currentChapter.value.let { currentChapter ->
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
@@ -169,7 +239,7 @@ fun BottomMenu(
 }
 
 @Composable
-fun VerseItem(verse: Verse, onClick: (() -> Unit)? = null) {
+fun VerseItem(verse: Verse, fontSize: State<TextUnit>, onClick: (() -> Unit)? = null) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,6 +250,6 @@ fun VerseItem(verse: Verse, onClick: (() -> Unit)? = null) {
                 }
             }
     ) {
-        Text(text = "${verse.number}. ${verse.text}")
+        Text(text = "${verse.number}. ${verse.text}", fontSize = fontSize.value)
     }
 }

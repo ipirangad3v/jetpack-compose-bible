@@ -9,4 +9,7 @@
     <string name="try_again">Tentar novamente</string>
     <string name="stop_speech">Parar</string>
     <string name="speech">Ouvir</string>
+    <string name="font_size">Tamanho da fonte</string>
+    <string name="increase">Aumentar</string>
+    <string name="decrease">Diminuir</string>
 </resources>
