@@ -11,6 +11,10 @@
     <string name="stop_speech">Stop</string>
     <string name="speech">Listen</string>
     <string name="font_size">Font size</string>
-    <string name="increase">Aumentar</string>
-    <string name="decrease">Diminuir</string>
+    <string name="increase">Increase</string>
+    <string name="decrease">Decrease</string>
+    <string name="share">Share</string>
+    <string name="share_verse">Share verse</string>
+    <string name="download_now_at_play_store">Download the bible now for free:</string>
+    <string name="verse_long_press_tutorial">Press and hold a verse to see options</string>
 </resources>

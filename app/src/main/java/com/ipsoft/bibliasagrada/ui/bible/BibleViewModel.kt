@@ -12,9 +12,12 @@ import com.ipsoft.bibliasagrada.domain.common.constants.MIN_FONT_SIZE
 import com.ipsoft.bibliasagrada.domain.core.extension.removeAccents
 import com.ipsoft.bibliasagrada.domain.model.BookResponse
 import com.ipsoft.bibliasagrada.domain.model.ChapterResponse
+import com.ipsoft.bibliasagrada.domain.model.Verse
+import com.ipsoft.bibliasagrada.domain.usecases.DisableShowPressAndHoldVerseTutorialUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetBooksUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetChapterUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.GetFontSizeUseCase
+import com.ipsoft.bibliasagrada.domain.usecases.GetShowPressAndHoldVerseTutorialUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.StoreFontSizeUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.UseCase
 import com.ipsoft.bibliasagrada.ui.BaseViewModel
@@ -29,10 +32,14 @@ class BibleViewModel @Inject constructor(
     private val getChapterUseCase: GetChapterUseCase,
     private val getFontSizeUseCase: GetFontSizeUseCase,
     private val storeFontSizeUseCase: StoreFontSizeUseCase,
+    private val disableShowPressAndHoldVerseTutorialUseCase: DisableShowPressAndHoldVerseTutorialUseCase,
+    private val getStoreShowPressAndHoldVerseTutorial: GetShowPressAndHoldVerseTutorialUseCase,
 ) : BaseViewModel() {
 
     private var bruteFontSize = 16
 
+    private val _showTutorial = MutableLiveData(true)
+    private val _selectedVerse = MutableLiveData<Verse?>(null)
     private val _fontSize = MutableLiveData(bruteFontSize.sp)
     private val _currentChapter = MutableLiveData<Int>()
     private val _currentText = MutableLiveData<String>()
@@ -43,6 +50,8 @@ class BibleViewModel @Inject constructor(
     private var textToSpeech: TextToSpeech? = null
     private val _isSpeechEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val showTutorial: LiveData<Boolean> = _showTutorial
+    val selectedVerse: LiveData<Verse?> = _selectedVerse
     val fontSize: LiveData<TextUnit> = _fontSize
     val books: LiveData<List<BookResponse>> = _books
     val lastSearch: LiveData<String> = _lastSearch
@@ -54,6 +63,18 @@ class BibleViewModel @Inject constructor(
 
     init {
         getFontSize()
+        getShowTutorialValue()
+    }
+
+    private fun getShowTutorialValue() {
+        return getStoreShowPressAndHoldVerseTutorial(
+            UseCase.None(),
+            viewModelScope,
+        ) { it.fold(::handleFailure, ::handleShowTutorial) }
+    }
+
+    private fun handleShowTutorial(showTutorial: Boolean) {
+        _showTutorial.value = showTutorial
     }
 
     fun setCurrentChapter(chapter: Int) {
@@ -179,6 +200,11 @@ class BibleViewModel @Inject constructor(
         _books.postValue(bookResponse)
     }
 
+    private fun handleTutorialDisabled(unit: Unit) {
+        _showTutorial.value = false
+        Timber.i("----- Tutorial disabled $unit")
+    }
+
     fun clearFilteredBooks() {
         _filteredBooks.postValue(null)
     }
@@ -198,6 +224,25 @@ class BibleViewModel @Inject constructor(
         if (bruteFontSize > MIN_FONT_SIZE) {
             _fontSize.value = (--bruteFontSize).sp
             storeFontSize()
+        }
+    }
+
+    fun setSelectedVerse(verse: Verse) {
+        _selectedVerse.value = verse
+    }
+
+    fun clearSelectedVerse() {
+        _selectedVerse.value = null
+    }
+
+    fun disableTutorials() {
+        return disableShowPressAndHoldVerseTutorialUseCase(
+            UseCase.None(), viewModelScope
+        ) {
+            it.fold(
+                ::handleFailure,
+                ::handleTutorialDisabled
+            )
         }
     }
 }
