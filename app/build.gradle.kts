@@ -14,6 +14,8 @@ plugins {
     id(BuildPlugins.daggerHilt)
     id(BuildPlugins.klint)
 }
+
+val BIBLIA_DIGITAL_TOKEN: String by project
 android {
     compileSdk = ConfigData.compileSdkVersion
     buildToolsVersion = ConfigData.buildToolsVersion
@@ -33,6 +35,7 @@ android {
         named("debug") {
             isDebuggable = true
             buildConfigField("boolean", "DEBUG", "true")
+            buildConfigField("String", "BIBLIA_DIGITAL_TOKEN", BIBLIA_DIGITAL_TOKEN)
         }
 
         named("release") {
@@ -40,6 +43,7 @@ android {
             isMinifyEnabled = true
             isDebuggable = false
             buildConfigField("boolean", "DEBUG", "false")
+            buildConfigField("String", "BIBLIA_DIGITAL_TOKEN", BIBLIA_DIGITAL_TOKEN)
             setProguardFiles(
                 listOf(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
