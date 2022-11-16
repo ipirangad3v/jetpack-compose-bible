@@ -17,6 +17,7 @@ class HeaderInterceptor : Interceptor {
                 .addHeader("Access-Control-Allow-Origin", "*")
                 .addHeader("Connection", "Keep-Alive")
                 .addHeader("Accept", "application/json")
+                .addHeader("Authorization", "Bearer ${BuildConfig.BIBLIA_DIGITAL_TOKEN}")
                 .build()
         )
     }
