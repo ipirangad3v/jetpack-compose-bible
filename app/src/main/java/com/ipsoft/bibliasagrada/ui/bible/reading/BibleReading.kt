@@ -98,8 +98,10 @@ fun BibleReading(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            DropdownMenu(expanded = showTutorial.value,
-                onDismissRequest = { viewModel.disableTutorials() }) {
+            DropdownMenu(
+                expanded = showTutorial.value,
+                onDismissRequest = { viewModel.disableTutorials() }
+            ) {
                 DropdownMenuItem(onClick = { }) {
 
                     Row() {
@@ -162,7 +164,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-                ) {
+            ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -326,7 +328,7 @@ private fun shareVerseIntent(verse: Verse, context: Context, bookName: String, c
         val line2 = "\n\n${context.getString(R.string.download_now_at_play_store)} $PLAY_STORE_URL"
         putExtra(
             Intent.EXTRA_TEXT,
-           line1 + line2
+            line1 + line2
         )
 
         type = "text/plain"
