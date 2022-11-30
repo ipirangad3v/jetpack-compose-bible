@@ -18,7 +18,7 @@ interface ChurchDao {
     fun getAllChapters(): List<ChapterResponse>
 
     @Query(ALL_BOOKS_QUERY)
-    fun xgetAllBooks(): List<BookResponse>
+    fun getAllBooks(): List<BookResponse>
 
     @Query(ALL_ABBREVS_QUERY)
     fun getAllAbbrevs(): List<AbbrevRoomModel>
