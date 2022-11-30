@@ -18,20 +18,18 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +49,6 @@ fun ListBooks(
 ) {
 
     val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
-    val shouldGetBooks by rememberUpdatedState(newValue = true)
 
     val textState =
         remember { mutableStateOf(viewModel.lastSearch.value?.let { TextFieldValue(it) }) }
@@ -61,12 +58,6 @@ fun ListBooks(
     val filteredBooksState: State<List<BookResponse>?> = viewModel.filteredBooks.observeAsState(
         initial = null
     )
-
-    LaunchedEffect(true) {
-        if (shouldGetBooks) {
-            viewModel.getBooks()
-        }
-    }
 
     Scaffold(topBar = {
         AppBar(
@@ -123,7 +114,7 @@ fun SearchView(state: MutableState<TextFieldValue?>, viewModel: BibleViewModel) 
 @Composable
 fun BookItem(book: BookResponse, fontSizeState: State<TextUnit>, onBookClick: () -> Unit) {
     Surface(
-        modifier = Modifier.fillMaxSize(), onClick = onBookClick
+        modifier = Modifier.fillMaxWidth(), onClick = onBookClick
     ) {
         Row(
             modifier = Modifier.padding(8.dp),

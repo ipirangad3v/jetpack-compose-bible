@@ -18,13 +18,10 @@ interface ChurchDao {
     fun getAllChapters(): List<ChapterResponse>
 
     @Query(ALL_BOOKS_QUERY)
-    fun getAllBooks(): List<BookResponse>
+    fun xgetAllBooks(): List<BookResponse>
 
     @Query(ALL_ABBREVS_QUERY)
     fun getAllAbbrevs(): List<AbbrevRoomModel>
-
-    @Insert(onConflict = REPLACE)
-    fun insertAllBooks(vararg books: BookResponse)
 
     @Insert(onConflict = REPLACE)
     fun insertAllBooks(books: List<BookResponse>)

@@ -22,9 +22,9 @@ import com.ipsoft.bibliasagrada.domain.usecases.StoreFontSizeUseCase
 import com.ipsoft.bibliasagrada.domain.usecases.UseCase
 import com.ipsoft.bibliasagrada.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
+import timber.log.Timber
 
 @HiltViewModel
 class BibleViewModel @Inject constructor(
@@ -64,6 +64,7 @@ class BibleViewModel @Inject constructor(
     init {
         getFontSize()
         getShowTutorialValue()
+        getBooks()
     }
 
     private fun getShowTutorialValue() {
