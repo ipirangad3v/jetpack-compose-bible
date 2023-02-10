@@ -3,7 +3,6 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven("https://plugins.gradle.org/m2/")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
@@ -43,7 +42,6 @@ plugins {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
