@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -105,7 +104,6 @@ fun BibleReading(
                     viewModel.stopSpeech()
                     navController.navigateUp()
                 }
-
             }
         },
     ) {
@@ -118,24 +116,6 @@ fun BibleReading(
                             toggleNavigationMenusVisibility(showBottomBar)
                         }
                     )
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-
-                        val (x, y) = dragAmount
-                        when {
-                            x > 0 -> {
-                                // swipe to right
-                                if (!loading.value) viewModel.previousChapter()
-                            }
-                            x < 0 -> {
-                                // swipe to left
-                                if (!loading.value) viewModel.nextChapter()
-                            }
-                            y > 0 || y < 0 -> {
-                                // swipe up or down
-                            }
-                        }
-                    }
                 }
         ) {
 
@@ -171,7 +151,9 @@ fun BibleReading(
                         viewModel.setSelectedVerse(verse)
                     }
                 }
-                if (showBottomBar.value) item { Spacer(modifier = Modifier.height(52.dp)) }
+                if (showBottomBar.value) item { Spacer(modifier = Modifier.height(64.dp)) } else {
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
+                }
             }
             selectedVerse.value?.let {
                 ShareVerseMenu(verse = it, viewModel, bookName, chapterId)
@@ -217,7 +199,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-                ) {
+            ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -333,7 +315,7 @@ fun VerseItem(
     onTap: () -> Unit,
     onLongClick: ((verse: Verse) -> Unit)? = null,
 
-    ) {
+) {
 
     Surface(
         modifier = Modifier
