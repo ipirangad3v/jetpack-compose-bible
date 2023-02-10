@@ -94,12 +94,18 @@ fun BibleReading(
 
     Scaffold(
         topBar = {
-            AppBar(
-                title = "$bookName - ${stringResource(id = R.string.chapter)} ${currentChapter.value}",
-                icon = Icons.Default.ArrowBack
+            AnimatedVisibility(visible = showBottomBar.value,
+                               enter = slideInVertically(initialOffsetY = { -40 }),
+                               exit = slideOutVertically(targetOffsetY = { -40 })
             ) {
-                viewModel.stopSpeech()
-                navController.navigateUp()
+                AppBar(
+                    title = "$bookName - ${stringResource(id = R.string.chapter)} ${currentChapter.value}",
+                    icon = Icons.Default.ArrowBack
+                ) {
+                    viewModel.stopSpeech()
+                    navController.navigateUp()
+                }
+
             }
         },
     ) {
@@ -107,7 +113,7 @@ fun BibleReading(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    toggleBottomVisibility(showBottomBar)
+                    toggleNavigationMenusVisibility(showBottomBar)
                 }
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
@@ -115,11 +121,11 @@ fun BibleReading(
 
                         val (x, y) = dragAmount
                         when {
-                            x > 100 -> {
+                            x > 100        -> {
                                 // swipe to right
                                 if (!loading.value) viewModel.previousChapter()
                             }
-                            x < -100 -> {
+                            x < -100       -> {
                                 // swipe to left
                                 if (!loading.value) viewModel.nextChapter()
                             }
@@ -158,7 +164,7 @@ fun BibleReading(
                     VerseItem(
                         verse,
                         fontSizeState,
-                        { toggleBottomVisibility(showBottomBar) }
+                        { toggleNavigationMenusVisibility(showBottomBar) }
                     ) {
                         viewModel.setSelectedVerse(verse)
                     }
@@ -180,7 +186,7 @@ fun BibleReading(
     }
 }
 
-fun toggleBottomVisibility(
+fun toggleNavigationMenusVisibility(
     showBottomBar: MutableState<Boolean>,
 ) {
     showBottomBar.value = !showBottomBar.value
@@ -210,7 +216,7 @@ fun BottomMenu(
                     viewModel.decreaseFontSize()
                 },
 
-            ) {
+                ) {
                 Text(
                     text = stringResource(id = R.string.decrease)
 
@@ -326,7 +332,7 @@ fun VerseItem(
     onClick: () -> Unit,
     onLongClick: ((verse: Verse) -> Unit)? = null,
 
-) {
+    ) {
 
     Surface(
         modifier = Modifier
