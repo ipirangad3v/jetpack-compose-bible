@@ -47,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.TextUnit
@@ -94,9 +93,10 @@ fun BibleReading(
 
     Scaffold(
         topBar = {
-            AnimatedVisibility(visible = showBottomBar.value,
-                               enter = slideInVertically(initialOffsetY = { -40 }),
-                               exit = slideOutVertically(targetOffsetY = { -40 })
+            AnimatedVisibility(
+                visible = showBottomBar.value,
+                enter = slideInVertically(initialOffsetY = { -40 }),
+                exit = slideOutVertically(targetOffsetY = { -40 })
             ) {
                 AppBar(
                     title = "$bookName - ${stringResource(id = R.string.chapter)} ${currentChapter.value}",
@@ -112,20 +112,22 @@ fun BibleReading(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable {
-                    toggleNavigationMenusVisibility(showBottomBar)
-                }
                 .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            toggleNavigationMenusVisibility(showBottomBar)
+                        }
+                    )
                     detectDragGestures { change, dragAmount ->
                         change.consume()
 
                         val (x, y) = dragAmount
                         when {
-                            x > 100        -> {
+                            x > 0 -> {
                                 // swipe to right
                                 if (!loading.value) viewModel.previousChapter()
                             }
-                            x < -100       -> {
+                            x < 0 -> {
                                 // swipe to left
                                 if (!loading.value) viewModel.nextChapter()
                             }
@@ -143,7 +145,7 @@ fun BibleReading(
             ) {
                 DropdownMenuItem(onClick = { }) {
 
-                    Row() {
+                    Row {
                         Text(
                             text = stringResource(id = R.string.verse_long_press_tutorial)
 
@@ -169,7 +171,7 @@ fun BibleReading(
                         viewModel.setSelectedVerse(verse)
                     }
                 }
-                item { Spacer(modifier = Modifier.height(48.dp)) }
+                if (showBottomBar.value) item { Spacer(modifier = Modifier.height(52.dp)) }
             }
             selectedVerse.value?.let {
                 ShareVerseMenu(verse = it, viewModel, bookName, chapterId)
@@ -202,7 +204,6 @@ fun BottomMenu(
     showBottomBar: MutableState<Boolean>,
 ) {
 
-    val density = LocalDensity.current
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -263,7 +264,7 @@ fun BottomMenu(
             Row(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
                 currentChapter.value.let { currentChapter ->
                     Icon(
@@ -329,7 +330,7 @@ fun BottomMenu(
 fun VerseItem(
     verse: Verse,
     fontSize: State<TextUnit>,
-    onClick: () -> Unit,
+    onTap: () -> Unit,
     onLongClick: ((verse: Verse) -> Unit)? = null,
 
     ) {
@@ -343,7 +344,7 @@ fun VerseItem(
                     if (onLongClick != null) {
                         onLongClick(verse)
                     }
-                }, onPress = { onClick() })
+                }, onTap = { onTap() })
             }
     ) {
         Text(text = "${verse.number}. ${verse.text}", fontSize = fontSize.value)
@@ -367,7 +368,7 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, ch
         DropdownMenuItem(onClick = {
             shareVerseIntent(verse, context, bookName = bookName, chapter = chapter)
         }) {
-            Row() {
+            Row {
                 Text(
                     text = stringResource(id = R.string.share)
 
