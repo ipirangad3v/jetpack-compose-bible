@@ -2,6 +2,9 @@ package com.ipsoft.bibliasagrada.ui.bible.reading
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +34,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -77,6 +81,9 @@ fun BibleReading(
     val currentText: State<String> = viewModel.currentText.observeAsState(initial = "")
     val currentChapter: State<Int> = viewModel.currentChapter.observeAsState(initial = chapterId)
     val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
+    val showBottomBar = remember {
+        mutableStateOf(true)
+    }
 
     with(viewModel) {
         getBookChapter(bookName, bookAbbrev, currentChapter.value)
@@ -85,17 +92,31 @@ fun BibleReading(
 
     Scaffold(
         topBar = {
-            AppBar(
-                title = "$bookName - ${stringResource(id = R.string.chapter)} ${currentChapter.value}",
-                icon = Icons.Default.ArrowBack
+            AnimatedVisibility(
+                visible = showBottomBar.value,
+                enter = slideInVertically(initialOffsetY = { -40 }),
+                exit = slideOutVertically(targetOffsetY = { -40 })
             ) {
-                viewModel.stopSpeech()
-                navController.navigateUp()
+                AppBar(
+                    title = "$bookName - ${stringResource(id = R.string.chapter)} ${currentChapter.value}",
+                    icon = Icons.Default.ArrowBack
+                ) {
+                    viewModel.stopSpeech()
+                    navController.navigateUp()
+                }
             }
         },
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            toggleNavigationMenusVisibility(showBottomBar)
+                        }
+                    )
+                }
         ) {
 
             DropdownMenu(
@@ -104,7 +125,7 @@ fun BibleReading(
             ) {
                 DropdownMenuItem(onClick = { }) {
 
-                    Row() {
+                    Row {
                         Text(
                             text = stringResource(id = R.string.verse_long_press_tutorial)
 
@@ -122,11 +143,17 @@ fun BibleReading(
             }
             LazyColumn {
                 items(chapterState.value?.verses ?: emptyList()) { verse ->
-                    VerseItem(verse, fontSizeState) {
+                    VerseItem(
+                        verse,
+                        fontSizeState,
+                        { toggleNavigationMenusVisibility(showBottomBar) }
+                    ) {
                         viewModel.setSelectedVerse(verse)
                     }
                 }
-                item { Spacer(modifier = Modifier.height(48.dp)) }
+                if (showBottomBar.value) item { Spacer(modifier = Modifier.height(64.dp)) } else {
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
+                }
             }
             selectedVerse.value?.let {
                 ShareVerseMenu(verse = it, viewModel, bookName, chapterId)
@@ -137,9 +164,16 @@ fun BibleReading(
                 currentText,
                 chapterQuantity,
                 currentChapter,
+                showBottomBar
             )
         }
     }
+}
+
+fun toggleNavigationMenusVisibility(
+    showBottomBar: MutableState<Boolean>,
+) {
+    showBottomBar.value = !showBottomBar.value
 }
 
 @Composable
@@ -149,6 +183,7 @@ fun BottomMenu(
     currentText: State<String>,
     chapterQuantity: Int,
     currentChapter: State<Int>,
+    showBottomBar: MutableState<Boolean>,
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -195,72 +230,79 @@ fun BottomMenu(
             }
         }
     }
-
-    Card(
-        elevation = 8.dp,
-        modifier = Modifier
-            .wrapContentSize(align = Alignment.BottomCenter)
-            .fillMaxWidth()
+    AnimatedVisibility(
+        visible = showBottomBar.value,
+        enter = slideInVertically(initialOffsetY = { 40 }),
+        exit = slideOutVertically(targetOffsetY = { 40 })
     ) {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(8.dp)
+
+        Card(
+            elevation = 8.dp,
+            modifier = Modifier
+                .wrapContentSize(align = Alignment.BottomCenter)
+                .fillMaxWidth()
+
         ) {
-            currentChapter.value.let { currentChapter ->
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null,
-                    modifier = Modifier.clickable {
-                        if (currentChapter > 1) {
-                            viewModel.previousChapter()
-                        }
-                    }
-                )
-            }
             Row(
-                modifier = Modifier.clickable {
-                    if (!isSpeechEnable.value) viewModel.textToSpeech(
-                        context,
-                        currentText.value
-                    ) else viewModel.stopSpeech()
-                }
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(16.dp)
             ) {
-                Icon(
-                    imageVector = if (isSpeechEnable.value) Icons.Filled.Clear else Icons.Filled.PlayArrow,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = if (isSpeechEnable.value) stringResource(id = R.string.stop_speech) else stringResource(
-                        id = R.string.speech
+                currentChapter.value.let { currentChapter ->
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            if (currentChapter > 1) {
+                                viewModel.previousChapter()
+                            }
+                        }
                     )
-                )
-            }
-            Row(
-                modifier = Modifier.clickable {
-                    expanded = !expanded
                 }
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_font_size),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = stringResource(id = R.string.font_size)
-                )
-            }
-            currentChapter.value.let { currentChapter ->
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = null,
+                Row(
                     modifier = Modifier.clickable {
-                        if (chapterQuantity > currentChapter) {
-                            viewModel.nextChapter()
-                        }
+                        if (!isSpeechEnable.value) viewModel.textToSpeech(
+                            context,
+                            currentText.value
+                        ) else viewModel.stopSpeech()
                     }
-                )
+                ) {
+                    Icon(
+                        imageVector = if (isSpeechEnable.value) Icons.Filled.Clear else Icons.Filled.PlayArrow,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = if (isSpeechEnable.value) stringResource(id = R.string.stop_speech) else stringResource(
+                            id = R.string.speech
+                        )
+                    )
+                }
+                Row(
+                    modifier = Modifier.clickable {
+                        expanded = !expanded
+                    }
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_font_size),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = stringResource(id = R.string.font_size)
+                    )
+                }
+                currentChapter.value.let { currentChapter ->
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            if (chapterQuantity > currentChapter) {
+                                viewModel.nextChapter()
+                            }
+                        }
+                    )
+                }
             }
         }
     }
@@ -270,7 +312,9 @@ fun BottomMenu(
 fun VerseItem(
     verse: Verse,
     fontSize: State<TextUnit>,
+    onTap: () -> Unit,
     onLongClick: ((verse: Verse) -> Unit)? = null,
+
 ) {
 
     Surface(
@@ -282,7 +326,7 @@ fun VerseItem(
                     if (onLongClick != null) {
                         onLongClick(verse)
                     }
-                })
+                }, onTap = { onTap() })
             }
     ) {
         Text(text = "${verse.number}. ${verse.text}", fontSize = fontSize.value)
@@ -306,7 +350,7 @@ fun ShareVerseMenu(verse: Verse, viewModel: BibleViewModel, bookName: String, ch
         DropdownMenuItem(onClick = {
             shareVerseIntent(verse, context, bookName = bookName, chapter = chapter)
         }) {
-            Row() {
+            Row {
                 Text(
                     text = stringResource(id = R.string.share)
 
