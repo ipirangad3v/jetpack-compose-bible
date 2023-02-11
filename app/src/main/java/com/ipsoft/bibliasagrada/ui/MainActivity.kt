@@ -13,8 +13,10 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -77,11 +79,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BibleApplication(viewModel: BibleViewModel) {
 
     val failure: State<Failure?> = viewModel.failure.observeAsState(initial = null)
     val loading: State<Boolean> = viewModel.loading.observeAsState(initial = true)
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     failure.value?.let {
         when (it) {
@@ -113,7 +118,7 @@ fun BibleApplication(viewModel: BibleViewModel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = ListBooksScreen.route) {
         composable(route = ListBooksScreen.route) {
-            ListBooks(viewModel, navController, loading)
+            ListBooks(viewModel, navController, loading, keyboardController)
         }
         composable(
             route = ListChaptersScreen.route,
