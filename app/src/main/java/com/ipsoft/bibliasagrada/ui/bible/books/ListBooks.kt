@@ -25,7 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -40,11 +40,13 @@ import com.ipsoft.bibliasagrada.ui.components.AppBar
 import com.ipsoft.bibliasagrada.ui.components.ErrorScreen
 import com.ipsoft.bibliasagrada.ui.components.Loading
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ListBooks(
     viewModel: BibleViewModel,
     navController: NavController,
     loading: State<Boolean>,
+    keyboardController: SoftwareKeyboardController?,
 ) {
 
     val fontSizeState: State<TextUnit> = viewModel.fontSize.observeAsState(initial = 16.sp)
@@ -70,10 +72,11 @@ fun ListBooks(
             if (loading.value) Loading()
             Column() {
                 if (booksState.value.isEmpty() && !loading.value) ErrorScreen { viewModel.getBooks() }
-                SearchView(textState, viewModel)
+                SearchView(textState, viewModel, keyboardController)
                 LazyColumn {
                     items(filteredBooksState.value ?: booksState.value) { book ->
                         BookItem(book, fontSizeState) {
+                            keyboardController?.hide()
                             navController.navigate("chapters_list/${book.name}/${book.abbrev.pt}/${book.chapters}")
                         }
                     }
@@ -85,8 +88,11 @@ fun ListBooks(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchView(state: MutableState<TextFieldValue?>, viewModel: BibleViewModel) {
-    val keyboardController = LocalSoftwareKeyboardController.current
+fun SearchView(
+    state: MutableState<TextFieldValue?>,
+    viewModel: BibleViewModel,
+    keyboardController: SoftwareKeyboardController?,
+) {
     Surface(modifier = Modifier.fillMaxWidth()) {
         state.value?.let {
             TextField(
