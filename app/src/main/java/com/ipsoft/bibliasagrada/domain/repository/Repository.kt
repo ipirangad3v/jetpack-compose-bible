@@ -14,13 +14,13 @@ interface Repository {
         return try {
             val response = call.execute()
             val either = when (response.isSuccessful) {
-                true -> Either.Right(transform((response.body()!!)))
-                false -> Either.Left(Failure.ServerError)
+                true -> Either.Success(transform((response.body()!!)))
+                false -> Either.Fail(Failure.ServerError)
             }
             either
         } catch (exception: Throwable) {
             Timber.e(exception)
-            Either.Left(Failure.ServerError)
+            Either.Fail(Failure.ServerError)
         }
     }
 }

@@ -23,11 +23,11 @@ class PreferencesDataStore(private val context: Context) {
         context.preferencesDataStore.edit { preferences ->
             preferences[fontSize] = data
         }
-        return Either.Right(Unit)
+        return Either.Success(Unit)
     }
 
     suspend fun readFontSize(): Either<Failure, Int> {
-        return Either.Right(
+        return Either.Success(
             context.preferencesDataStore.data.map { preferences ->
                 preferences[fontSize] ?: STD_FONT_SIZE
             }.first()
@@ -38,11 +38,11 @@ class PreferencesDataStore(private val context: Context) {
         context.preferencesDataStore.edit { preferences ->
             preferences[showPressAndHoldVerseTutorial] = false
         }
-        return Either.Right(Unit)
+        return Either.Success(Unit)
     }
 
     suspend fun readShowPressAndHoldVerseTutorial(): Either<Failure, Boolean> {
-        return Either.Right(
+        return Either.Success(
             context.preferencesDataStore.data.map { preferences ->
                 preferences[showPressAndHoldVerseTutorial] ?: true
             }.first()

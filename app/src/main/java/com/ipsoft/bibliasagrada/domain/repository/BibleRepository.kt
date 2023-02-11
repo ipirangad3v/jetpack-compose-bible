@@ -52,7 +52,7 @@ interface BibleRepository : Repository {
                             }
                             booksResponse
                         }
-                    false -> Either.Left(Failure.NetworkConnection)
+                    false -> Either.Fail(Failure.NetworkConnection)
                 }
             } else {
 
@@ -64,7 +64,7 @@ interface BibleRepository : Repository {
                     }
                 }
 
-                Either.Right(books.distinctBy { it.name })
+                Either.Success(books.distinctBy { it.name })
             }
         }
 
@@ -91,10 +91,10 @@ interface BibleRepository : Repository {
                             bibleDao.insertAllChapters(chapterResponse)
                             chapterResponse
                         }
-                    false -> Either.Left(Failure.NetworkConnection)
+                    false -> Either.Fail(Failure.NetworkConnection)
                 }
             } else {
-                Either.Right(chapterDbResponse)
+                Either.Success(chapterDbResponse)
             }
         }
     }

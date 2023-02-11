@@ -1,102 +1,72 @@
 package com.ipsoft.bibliasagrada.domain.core.function
 
+import com.ipsoft.bibliasagrada.domain.core.function.Either.Fail
+import com.ipsoft.bibliasagrada.domain.core.function.Either.Success
+
 /**
  * Represents a value of one of two possible types (a disjoint union).
- * Instances of [Either] are either an instance of [Left] or [Right].
- * FP Convention dictates that [Left] is used for "failure"
- * and [Right] is used for "success".
+ * Instances of [Either] are either an instance of [Fail] or [Success].
+ * FP Convention dictates that [Fail] is used for "failure"
+ * and [Success] is used for "success".
  *
- * @see Left
- * @see Right
+ * @see Fail
+ * @see Success
  */
-sealed class Either<out L, out R> {
+sealed class Either<out FAIL, out SUCCESS> {
     /** * Represents the left side of [Either] class which by convention is a "Failure". */
-    data class Left<out L>(val a: L) : Either<L, Nothing>()
+    data class Fail<out FAIL>(val a: FAIL) : Either<FAIL, Nothing>()
 
     /** * Represents the right side of [Either] class which by convention is a "Success". */
-    data class Right<out R>(val b: R) : Either<Nothing, R>()
+    data class Success<out SUCCESS>(val b: SUCCESS) : Either<Nothing, SUCCESS>()
 
     /**
      * Returns true if this is a Right, false otherwise.
-     * @see Right
+     * @see Success
      */
-    val isRight get() = this is Right<R>
+    val isSuccess get() = this is Success<SUCCESS>
 
     /**
      * Returns true if this is a Left, false otherwise.
-     * @see Left
+     * @see Fail
      */
-    val isLeft get() = this is Left<L>
+    val isFail get() = this is Fail<FAIL>
 
     /**
      * Creates a Left type.
-     * @see Left
+     * @see Fail
      */
-    fun <L> left(a: L) = Left(a)
+    fun <FAIL> fail(a: FAIL) = Fail(a)
 
     /**
-     * Creates a Left type.
-     * @see Right
+     * Creates a Right type.
+     * @see Success
      */
-    fun <R> right(b: R) = Right(b)
+    fun <SUCCESS> success(b: SUCCESS) = Success(b)
 
     /**
      * Applies fnL if this is a Left or fnR if this is a Right.
-     * @see Left
-     * @see Right
+     * @see Fail
+     * @see Success
      */
-    fun fold(fnL: (L) -> Any, fnR: (R) -> Any): Any =
+    fun fold(fnL: (FAIL) -> Any, fnR: (SUCCESS) -> Any): Any =
         when (this) {
-            is Left -> fnL(a)
-            is Right -> fnR(b)
+            is Fail    -> fnL(a)
+            is Success -> fnR(b)
         }
 }
-
-/**
- * Composes 2 functions
- * See <a href="https://proandroiddev.com/kotlins-nothing-type-946de7d464fb">Credits to Alex Hart.</a>
- */
-fun <A, B, C> ((A) -> B).c(f: (B) -> C): (A) -> C = {
-    f(this(it))
-}
-
-/**
- * Right-biased flatMap() FP convention which means that Right is assumed to be the default case
- * to operate on. If it is Left, operations like map, flatMap, ... return the Left value unchanged.
- */
-fun <T, L, R> Either<L, R>.flatMap(fn: (R) -> Either<L, T>): Either<L, T> =
-    when (this) {
-        is Either.Left -> Either.Left(a)
-        is Either.Right -> fn(b)
-    }
-
-/**
- * Right-biased map() FP convention which means that Right is assumed to be the default case
- * to operate on. If it is Left, operations like map, flatMap, ... return the Left value unchanged.
- */
-fun <T, L, R> Either<L, R>.map(fn: (R) -> (T)): Either<L, T> = this.flatMap(fn.c(::right))
-
-/** Returns the value from this `Right` or the given argument if this is a `Left`.
- *  Right(12).getOrElse(17) RETURNS 12 and Left(12).getOrElse(17) RETURNS 17
- */
-fun <L, R> Either<L, R>.getOrElse(value: R): R =
-    when (this) {
-        is Either.Left -> value
-        is Either.Right -> b
-    }
 
 /**
  * Left-biased onFailure() FP convention dictates that when this class is Left, it'll perform
  * the onFailure functionality passed as a parameter, but, overall will still return an either
  * object so you chain calls.
  */
-fun <L, R> Either<L, R>.onFailure(fn: (failure: L) -> Unit): Either<L, R> =
-    this.apply { if (this is Either.Left) fn(a) }
+fun <FAIL, SUCCESS> Either<FAIL, SUCCESS>.onFailure(fn: (failure: FAIL) -> Unit): Either<FAIL, SUCCESS> =
+    this.apply { if (this is Fail) fn(a) }
 
 /**
  * Right-biased onSuccess() FP convention dictates that when this class is Right, it'll perform
  * the onSuccess functionality passed as a parameter, but, overall will still return an either
  * object so you chain calls.
  */
-fun <L, R> Either<L, R>.onSuccess(fn: (success: R) -> Unit): Either<L, R> =
-    this.apply { if (this is Either.Right) fn(b) }
+fun <FAIL, SUCCESS> Either<FAIL, SUCCESS>.onSuccess(fn: (success: SUCCESS) -> Unit): Either<FAIL, SUCCESS> =
+    this.apply { if (this is Success) fn(b) }
