@@ -1,5 +1,6 @@
 package com.ipsoft.bibliasagrada.ui.bible.books
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +12,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -23,6 +26,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -72,7 +76,10 @@ fun ListBooks(
             if (loading.value) Loading()
             Column() {
                 if (booksState.value.isEmpty() && !loading.value) ErrorScreen { viewModel.getBooks() }
-                SearchView(textState, viewModel, keyboardController)
+                SearchView(textState, viewModel, keyboardController) {
+                    textState.value = TextFieldValue("")
+                    viewModel.searchBook("")
+                }
                 LazyColumn {
                     items(filteredBooksState.value ?: booksState.value) { book ->
                         BookItem(book, fontSizeState) {
@@ -92,6 +99,7 @@ fun SearchView(
     state: MutableState<TextFieldValue?>,
     viewModel: BibleViewModel,
     keyboardController: SoftwareKeyboardController?,
+    onDeleteClick: () -> Unit,
 ) {
     Surface(modifier = Modifier.fillMaxWidth()) {
         state.value?.let {
@@ -104,13 +112,25 @@ fun SearchView(
                         value.text
                     )
                 },
-                label = { Text(stringResource(id = R.string.find_book)) },
+                label = {
+                    Text(stringResource(id = R.string.find_book))
+                },
+                trailingIcon = {
+                    if (state.value?.text?.isBlank() == false) Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null, modifier = Modifier.clickable {
+                            onDeleteClick()
+                        }
+                    )
+
+                },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = { keyboardController?.hide() }
+                ),
+
                 )
-            )
         }
     }
 }

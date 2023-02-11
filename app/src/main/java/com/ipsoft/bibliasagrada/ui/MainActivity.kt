@@ -98,14 +98,14 @@ fun BibleApplication(viewModel: BibleViewModel) {
                 )
                     .show()
             }
-            is Failure.ServerError       -> {
+            is Failure.ServerError -> {
                 Toast.makeText(
                     LocalContext.current,
                     stringResource(R.string.server_error),
                     Toast.LENGTH_LONG
                 ).show()
             }
-            else                         -> {
+            else -> {
                 Toast.makeText(
                     LocalContext.current,
                     stringResource(R.string.unknown_error),
