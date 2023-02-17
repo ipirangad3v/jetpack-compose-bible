@@ -26,7 +26,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -118,11 +117,11 @@ fun SearchView(
                 trailingIcon = {
                     if (state.value?.text?.isBlank() == false) Icon(
                         Icons.Default.Delete,
-                        contentDescription = null, modifier = Modifier.clickable {
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
                             onDeleteClick()
                         }
                     )
-
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -130,7 +129,7 @@ fun SearchView(
                     onDone = { keyboardController?.hide() }
                 ),
 
-                )
+            )
         }
     }
 }

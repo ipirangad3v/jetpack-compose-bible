@@ -50,7 +50,7 @@ sealed class Either<out FAIL, out SUCCESS> {
      */
     fun fold(fnL: (FAIL) -> Any, fnR: (SUCCESS) -> Any): Any =
         when (this) {
-            is Fail    -> fnL(a)
+            is Fail -> fnL(a)
             is Success -> fnR(b)
         }
 }

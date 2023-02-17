@@ -88,4 +88,5 @@ object Deps {
 object Test {
     val jUnit by lazy { "junit:junit:${Versions.jUnit}" }
     val testExt by lazy { "androidx.test.ext:junit:${Versions.testExt}" }
+    val mockito by lazy { "org.mockito:mockito-core:${Versions.mockito}" }
 }
