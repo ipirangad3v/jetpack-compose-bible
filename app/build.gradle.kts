@@ -82,6 +82,9 @@ dependencies {
     implementation(Deps.coreKtx)
     implementation(Deps.lifecycleRuntime)
     implementation(Deps.activityCompose)
+
+    // Tests
+    testImplementation(Test.mockito)
     testImplementation(Test.jUnit)
     androidTestImplementation(Test.testExt)
 
