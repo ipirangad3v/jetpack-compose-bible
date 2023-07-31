@@ -1,3 +1,5 @@
+https://PlayBadges.pavi2410.me/badge/full?id=<com.ipsoft.bibliasagrada>
+
 # Jetpack compose Bible
 
 <a href="https://play.google.com/store/apps/details?id=com.ipsoft.bibliasagrada"><img src="https://github.com/AnthoniIP/Biblie/blob/master/screenshots/playstore.png" alt="Download on play store" width="200"></a>
