@@ -4,7 +4,7 @@
 
  <a href="https://play.google.com/store/apps/details?id=com.ipsoft.bibliasagrada" target="blank"><img align="center"
             src="https://PlayBadges.pavi2410.me/badge/full?id=com.ipsoft.bibliasagrada"
-            alt="anthoniipiranga" height="30" width="40" /></a>
+            alt="playtore link"  /></a>
 
 
 
